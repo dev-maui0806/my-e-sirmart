@@ -10,9 +10,10 @@ import Header from './shared/Header';
 type Props = {
   noFooter?: boolean;
   component: React.ReactElement;
+  onSearch: (text: string) => void;
 };
 
-const Layout = ({ noFooter, component }: Props) => {
+const Layout = ({ noFooter, component, onSearch }: any) => {
   const modalShown = useAppSelector((state) => state.modal.visible);
   const cartShown = useAppSelector((state) => state.ui.cartPanel);
 
@@ -23,7 +24,7 @@ const Layout = ({ noFooter, component }: Props) => {
   return (
     <>
       <div>
-        <Header />
+        <Header onSearch={onSearch}/>
         <main className="pt-28 sm:pt-24">{component}</main>
         {!noFooter && (
           <>

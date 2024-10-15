@@ -1,7 +1,8 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProductViewAll from "./components/Products/ProductViewall";
+import ProductViewAllByCategory from "./components/Products/ProductViewAllByCategory";
 import { Loader } from "./components/shared";
 import { Error404, Home } from "./pages";
 import ResetPassword from "./components/auth/ResetPass";
@@ -9,35 +10,41 @@ import ResetPassword from "./components/auth/ResetPass";
 const ProductView = React.lazy(() => import("./pages/ProductView"));
 
 const AppWithRouting = () => {
+  const [searchText, setSearchText] = useState<string>('');
+
+  const onSearch = (text: string) => {
+    setSearchText(text);
+  }
+
   return (
     <Routes>
-      <Route path="/" element={<Layout component={<Home />} />} />
+      <Route path="/" element={<Layout component={<Home searchText={searchText}/>} onSearch={onSearch} />} />
       <Route path="/ResetPassword" element={<ResetPassword />} />
       <Route
         path="/products/shop/:shopId"
-        element={<Layout component={<ProductViewAll />} />}
+        element={<Layout component={<ProductViewAll searchText={searchText}/>} onSearch={onSearch}/>}
       />
       <Route
-        path="/products/category"
+        path="/products/category/:category"
         element={
-          <Layout component={<ProductViewAll />} />
+          <Layout component={<ProductViewAllByCategory searchText={searchText}/>} onSearch={onSearch}/>
         }
       />
       <Route
         path="/prn/:name/prid/:id"
         element={
           <Suspense fallback={<Loader fullscreen />}>
-            <Layout component={<ProductView />} />
+            <Layout component={<ProductView />} onSearch={onSearch}/>
           </Suspense>
         }
       />
       <Route
         path="/not-found"
-        element={<Layout noFooter={true} component={<Error404 />} />}
+        element={<Layout noFooter={true} component={<Error404 />} onSearch={onSearch}/>}
       />
       <Route
         path="*"
-        element={<Layout noFooter={true} component={<Error404 />} />}
+        element={<Layout noFooter={true} component={<Error404 />} onSearch={onSearch}/>}
       />
     </Routes>
   );

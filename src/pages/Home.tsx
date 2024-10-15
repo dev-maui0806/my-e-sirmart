@@ -15,14 +15,14 @@ import {
 } from "../services/api/products.js";
 import { ProductRow } from "../utils/types";
 
-const Home = () => {
+const Home = ({searchText}: any) => {
 
   const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       const data: ProductSearchPayload = {
-        searchText: "",
+        searchText: searchText,
         shopId: "",
         category: "",
         nearby: false,
@@ -31,7 +31,6 @@ const Home = () => {
       };
       try {
         const response = await listProductsApi(data); // Await the promise
-        console.log(response);
         
         setProducts(response);
       } catch (error) {
@@ -40,7 +39,7 @@ const Home = () => {
     };
 
     fetchProducts(); // Call the async function to fetch products
-  }, []);
+  }, [searchText]);
 
   return (
     <div className="_container" style={{overflowX:'hidden'}}>

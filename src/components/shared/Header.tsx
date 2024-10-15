@@ -18,7 +18,7 @@ import ForgotPassword from "../auth/ForgotPass";
 import "./style.css";
 import "./style1.css";
 
-const Header = () => {
+const Header = ({ onSearch }: any) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -74,11 +74,6 @@ const Header = () => {
       window.location.reload();
     }, 500);
   };
-
-  const onSearch = (searchText: string) => {
-    console.log(searchText);
-    
-  }
 
   return (
     <>

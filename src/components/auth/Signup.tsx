@@ -53,27 +53,20 @@ const Signup: React.FC<SignupProps> = ({
     setShowRepeatPassword((prevState) => !prevState);
   };
 
-  const handleRegister = async () => {
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !phoneNumber ||
-      !password ||
-      !confirmPassword
-    ) {
-      notification.error({
-        message: "Please input all fields",
-      });
-      return;
+  const validateInputs = () => {
+    if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
+      notification.error({ message: "Please input all fields" });
+      return false;
     }
-
     if (password !== confirmPassword) {
-      notification.error({
-        message: "Passwords do not match",
-      });
-      return;
+      notification.error({ message: "Passwords do not match" });
+      return false;
     }
+    return true;
+  };
+
+  const handleRegister = async () => {
+    if (!validateInputs()) return;
 
     const registerData: REGISTERDATA = {
       first_name: firstName,

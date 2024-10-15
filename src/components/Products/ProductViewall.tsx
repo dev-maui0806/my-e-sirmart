@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./style.css"; // Assuming the styles are shared
-import { useParams  } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   listProductsApi,
   ProductSearchPayload,
@@ -9,52 +9,34 @@ import ProductCard from "../ProductCard";
 import { Loader } from "../shared";
 
 const categories = [
-  { name: "All", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-
-  { name: "Paan Corner", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  {
-    name: "Vegetables & Fruits ",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  {
-    name: "Instant & Frozen Food",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  { name: "Atta, Rice & Dai", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  {
-    name: "Cleaning Essentials",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  { name: "Dairy & Breakfast", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  {
-    name: "Tea, Coffee & Health Drinks",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  {
-    name: "Dry Fruits, Masala & Oil",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  { name: "Organic & Premium", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Home & Office", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Munchies", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Bakery & Biscuits", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Sauces & Spreads", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Baby Care", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Personal Care", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  {
-    name: "Cold Drinks & Juices",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  { name: "Sweet Tooth", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  {
-    name: "Chicken, Meat & Fish",
-    icon: "https://i.postimg.cc/DzTwNjM0/19.webp",
-  },
-  { name: "Pharma & Wellness", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
-  { name: "Pet Care", icon: "https://i.postimg.cc/DzTwNjM0/19.webp" },
+  { name: "All", icon: "0.webp" },
+  { name: "Fruits & Vegetables", icon: "1.avif" },
+  { name: "Dairy, Bread & Eggs", icon: "2.avif" },
+  { name: "Snacks & Munchies", icon: "3.avif" },
+  { name: "Bakery & Biscuits", icon: "4.avif" },
+  { name: "Breakfast & Instant Food", icon: "5.webp" },
+  { name: "Tea, Coffee & Health Drink", icon: "6.avif" },
+  { name: "Cold Drinks & Juices", icon: "7.avif" },
+  { name: "Sweet Tooth", icon: "8.avif" },
+  { name: "Atta, Rice & Dai", icon: "9.avif" },
+  { name: "Masala, Oil & More", icon: "10.avif" },
+  { name: "Sauces & Spreads", icon: "11.avif" },
+  { name: "Chicken, Meat & Fish", icon: "12.avif" },
+  { name: "Organic & Healthy Living", icon: "13.avif" },
+  { name: "Paan Corner", icon: "14.avif" },
+  { name: "Baby Care", icon: "15.avif" },
+  { name: "Pharma & Wellness", icon: "16.webp" },
+  { name: "Cleaning Essentials", icon: "17.avif" },
+  { name: "Home & Office", icon: "18.webp" },
+  { name: "Personal Care", icon: "19.webp" },
+  { name: "Pet Care", icon: "20.avif" },
 ];
 
-const ProductViewAll: React.FC = () => {
+interface ProductViewAllProps {
+  searchText: string;
+}
+
+const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
   const param = useParams();
   const [shopId, setShopId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,8 +49,8 @@ const ProductViewAll: React.FC = () => {
       setProducts([]);
       setLoading(true);
       const data: ProductSearchPayload = {
-        searchText: "",
-        shopId: param.shopId,
+        searchText: searchText,
+        shopId: param.shopId,  
         category: category,
         nearby: false,
         page: 1,
@@ -77,14 +59,14 @@ const ProductViewAll: React.FC = () => {
 
       const response = await listProductsApi(data);
       console.log(response);
-      
+
       setLoading(false);
       setProducts(response[0].products);
       setShopName(response[0].shopName);
     };
 
     fetchData();
-  }, [category]);
+  }, [category, searchText]);
 
   useEffect(() => {
     setShopId(param.shopId || "");
@@ -100,22 +82,21 @@ const ProductViewAll: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           overflowY: "auto",
-          scrollbarWidth:'none'
+          scrollbarWidth: 'none'
         }}
       >
         {categories.map((cat) => (
           <button
             key={cat.name}
-            className={`category-button ${
-              category === cat.name ? "active" : ""
-            }`}
+            className={`category-button ${category === cat.name ? "active" : ""
+              }`}
             onClick={() => setCategory(cat.name)}
             style={{
               display: "flex",
               alignItems: "center",
               padding: "0.75rem 1rem",
               border: "none",
-              borderBottom:'1px solid #dddddd',
+              borderBottom: '1px solid #dddddd',
               backgroundColor: category === cat.name ? "#F0F8E7" : "white",
               borderLeft:
                 category === cat.name
@@ -126,7 +107,7 @@ const ProductViewAll: React.FC = () => {
             }}
           >
             <img
-              src={cat.icon}
+              src={`/categories/${cat.icon}`}
               alt={cat.name}
               style={{
                 width: "50px",
@@ -147,8 +128,8 @@ const ProductViewAll: React.FC = () => {
         }}
       >
         <div className="w-full flex flex-row justify-between items-center py-3 px-4 border-b bg-white">
-          { shopId && <h1 className="text-[18px] font-medium text-[#333]">{shopName}</h1> }
-          <p className="font-medium text-[#333]">total: {products.length} items</p>
+          {shopId && <h1 className="text-[18px] font-medium text-[#333]">Shop: {shopName}</h1>}
+          <p className="font-medium text-[#333]">Total: {products.length} products</p>
         </div>
         <div
           className="_container"
@@ -161,10 +142,10 @@ const ProductViewAll: React.FC = () => {
             flexWrap: 'wrap'
           }}
         >
-          {loading ? <Loader/> :
-          products.length > 0 ? products.map((product) => (
-            <ProductCard key={product.id} data={product} />
-          )) : <h1>No data</h1>}
+          {loading ? <Loader /> :
+            products.length > 0 ? products.map((product) => (
+              <ProductCard key={product.id} data={product} />
+            )) : <h1>No data</h1>}
         </div>
       </div>
     </div>
