@@ -1,0 +1,64 @@
+.address-selection {
+  display: flex;
+  flex-direction: row;
+}
+
+.panel {
+  background: white;
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 10px;
+  width: 300px;
+}
+
+.half-input-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.half-input {
+  max-width: 120px;
+}
+
+.map-container {
+  margin: 10px;
+  height: 500px;
+  width: 600px;
+}
+
+.sb-title {
+  position: relative;
+  top: -12px;
+  font-family: Roboto, sans-serif;
+  font-weight: 500;
+}
+
+.sb-title-icon {
+  position: relative;
+  top: -5px;
+}
+
+input {
+  height: 30px;
+  border: 0;
+  border-bottom: 1px solid black;
+  font-size: 14px;
+  font-family: Roboto, sans-serif;
+}
+
+input:focus::placeholder {
+  color: white;
+}
+
+.checkout-btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+  
