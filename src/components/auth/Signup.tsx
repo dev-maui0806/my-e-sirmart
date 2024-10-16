@@ -5,9 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Spin, notification } from "antd";
 import { REGISTERDATA, userRegister } from "../../services/api/auth";
-import PhoneInput from "react-phone-input-2";
 import { LoadingOutlined } from "@ant-design/icons";
-import "react-phone-input-2/lib/style.css";
 import {
   GoogleLogin,
   googleLogout,
@@ -25,6 +23,7 @@ const Signup: React.FC<SignupProps> = ({
   switchToLoginModal,
   toggleSignupModal,
 }) => {
+  console.log(switchToLoginModal, toggleSignupModal);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -41,10 +40,6 @@ const Signup: React.FC<SignupProps> = ({
     window.innerWidth === 1023
   );
 
-  const handlePhoneChange = (value: string) => {
-    setPhoneNumber(value);
-  };
-
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -54,7 +49,14 @@ const Signup: React.FC<SignupProps> = ({
   };
 
   const validateInputs = () => {
-    if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !phoneNumber ||
+      !password ||
+      !confirmPassword
+    ) {
       notification.error({ message: "Please input all fields" });
       return false;
     }
@@ -115,6 +117,7 @@ const Signup: React.FC<SignupProps> = ({
   };
 
   useEffect(() => {
+    console.log("loading signup");
     const handleResize = () => {
       setIsMobileView(window.innerWidth <= 1023);
     };
@@ -136,7 +139,10 @@ const Signup: React.FC<SignupProps> = ({
 
   return (
     <>
-      <div key="signup-modal" className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div
+        key="signup-modal"
+        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      >
         <div className="max-w-screen-lg m-0 sm:m-28 bg-white shadow sm:rounded-lg flex justify-center flex-1 relative">
           <button
             className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 focus:outline-none"
@@ -171,7 +177,6 @@ const Signup: React.FC<SignupProps> = ({
                     useOneTap
                     shape="rectangular"
                     width="250px"
-
                   />
                 </GoogleOAuthProvider>
               </div>
@@ -187,7 +192,7 @@ const Signup: React.FC<SignupProps> = ({
                   <div className="border border-gray-300 w-full rounded-lg">
                     <input
                       className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
-                      type="FirstName"
+                      type="text"
                       placeholder="FirstName"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
@@ -196,7 +201,7 @@ const Signup: React.FC<SignupProps> = ({
                   <div className="border border-gray-300 w-full rounded-lg">
                     <input
                       className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
-                      type="LastName"
+                      type="text"
                       placeholder="LastName"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
@@ -215,14 +220,12 @@ const Signup: React.FC<SignupProps> = ({
                 </div>
 
                 <div className="border border-gray-300 w-full rounded-lg">
-                  <PhoneInput
-                    country={"in"}
+                  <input
+                    className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                    type="text"
+                    placeholder="Phone Number"
                     value={phoneNumber}
-                    onChange={handlePhoneChange}
-                    inputClass="phone-input-field"
-                    placeholder="Phone number"
-                    enableSearch={true}
-                    inputStyle={{ width: "100%", padding: "28px 50px" }}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div>
 

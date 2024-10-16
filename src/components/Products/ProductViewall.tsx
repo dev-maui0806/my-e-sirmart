@@ -127,7 +127,11 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
         style={{
           width: "100%",
           backgroundColor: "#F4F6FB",
-          padding: 0
+          padding: 0,
+          display:'flex',
+          justifyContent:'center',
+          alignItems:'center',
+          flexDirection:'column'          
         }}
       >
         <div className="w-full flex flex-row justify-between items-center py-3 px-4 border-b bg-white">
@@ -147,10 +151,9 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
             gap: "8px",
             padding: "8px",
             backgroundColor: "#F4F6FB",
-            flexWrap: "wrap",
-            height: "90%",
-            display: "flex",
             position: "relative",
+            display:'grid',
+            gridTemplateColumns:'repeat(6, 1fr)',
           }}
         >
           {loading ? (
@@ -160,7 +163,6 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
               <ProductCard key={product.id} data={product} />
             ))
           ) : (
-            // <h1>No data</h1>
             <div
               style={{
                 width: "100%",
