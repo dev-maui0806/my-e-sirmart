@@ -75,7 +75,7 @@ const ProductCard = ({ data }: { data: ProductItem }) => {
 
   return (
     <div
-      className="_card h-[270px] w-[180px] relative flex cursor-pointer mb-2 mx-auto sm:mx-0"
+      className="_card h-[280px] w-[190px] relative flex cursor-pointer mb-2 mx-auto sm:mx-0"
       onClick={handleProductClick}
     >
       {discountPercent > 0 && (

@@ -74,110 +74,109 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
   }, []);
 
   return (
-    <div className="product-view-all container border">
-      <div
-        className="category-bar"
-        style={{
-          width: "20%",
-          borderRight: "1px solid #ddd",
-          display: "flex",
-          flexDirection: "column",
-          overflowY: "auto",
-          scrollbarWidth: "none",
-        }}
-      >
-        {categories.map((cat) => (
-          <button
-            key={cat.name}
-            className={`category-button ${
-              category === cat.name ? "active" : ""
-            }`}
-            onClick={() => setCategory(cat.name)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.75rem 1rem",
-              border: "none",
-              borderBottom: "1px solid #dddddd",
-              backgroundColor: category === cat.name ? "#F0F8E7" : "white",
-              borderLeft:
-                category === cat.name
-                  ? "5px solid green"
-                  : "5px solid transparent",
-              cursor: "pointer",
-              textAlign: "left",
-            }}
-          >
-            <img
-              src={`/categories/${cat.icon}`}
-              alt={cat.name}
+    <div className="product-view container border relative">
+      <div className="product-view-all border relative">
+        <div
+          className="category-bar"
+          style={{
+            width: "20%",
+            borderRight: "1px solid #ddd",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            scrollbarWidth: "none",
+          }}
+        >
+          {categories.map((cat) => (
+            <button
+              key={cat.name}
+              className={`category-button ${
+                category === cat.name ? "active" : ""
+              }`}
+              onClick={() => setCategory(cat.name)}
               style={{
-                width: "50px",
-                height: "50px",
-                marginRight: "10px",
+                display: "flex",
+                alignItems: "center",
+                padding: "0.75rem 1rem",
+                border: "none",
+                borderBottom: "1px solid #dddddd",
+                backgroundColor: category === cat.name ? "#F0F8E7" : "white",
+                borderLeft:
+                  category === cat.name
+                    ? "5px solid green"
+                    : "5px solid transparent",
+                cursor: "pointer",
+                textAlign: "left",
               }}
-            />
-            <p className="font-normal">{cat.name}</p>
-          </button>
-        ))}
-      </div>
-
-      <div
-        className="_container"
-        style={{
-          width: "100%",
-          backgroundColor: "#F4F6FB",
-          padding: 0,
-          display:'flex',
-          justifyContent:'center',
-          alignItems:'center',
-          flexDirection:'column'          
-        }}
-      >
-        <div className="w-full flex flex-row justify-between items-center py-3 px-4 border-b bg-white">
-          {shopId && (
-            <h1 className="text-[18px] font-medium text-[#333]">
-              Shop: {shopName}
-            </h1>
-          )}
-          <p className="font-medium text-[#333]">
-            Total: {products.length} products
-          </p>
+            >
+              <img
+                src={`/categories/${cat.icon}`}
+                alt={cat.name}
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  marginRight: "10px",
+                }}
+              />
+              <p className="font-normal">{cat.name}</p>
+            </button>
+          ))}
         </div>
+
         <div
           className="_container"
           style={{
             width: "100%",
-            gap: "8px",
-            padding: "8px",
             backgroundColor: "#F4F6FB",
+            padding: 0,
             position: "relative",
-            display:'grid',
-            gridTemplateColumns:'repeat(6, 1fr)',
+            // display:'flex',
+            // justifyContent:'center',
+            // alignItems:'center',
+            // flexDirection:'column'
           }}
         >
           {loading ? (
             <Loader />
-          ) : products.length > 0 ? (
-            products.map((product) => (
-              <ProductCard key={product.id} data={product} />
-            ))
           ) : (
-            <div
-              style={{
-                width: "100%",
-                gap: "8px",
-                padding: "8px",
-                backgroundColor: "#F4F6FB",
-                flexWrap: "wrap",
-                height: "90%",
-                display: "flex",
-                justifyContent:'center',
-                alignItems:'center'
-              }}
-            >
-              <Empty />
-            </div>
+            <>
+              <div className="w-full flex flex-row justify-between items-center py-3 px-4 border-b bg-white">
+                {shopId && (
+                  <h1 className="text-[18px] font-medium text-[#333]">
+                    Shop: {shopName}
+                  </h1>
+                )}
+                <p className="font-medium text-[#333]">
+                  Total: {products.length} products
+                </p>
+              </div>
+
+              <div className="_container w-full flex justify-center p-2">
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {products.length > 0 ? (
+                    products.map((product) => (
+                      <ProductCard key={product.id} data={product} />
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        width: "100%",
+                        gap: "8px",
+                        padding: "8px",
+                        backgroundColor: "#F4F6FB",
+                        flexWrap: "wrap",
+                        height: "90%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Empty />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
