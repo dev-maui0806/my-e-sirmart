@@ -50,13 +50,13 @@ const Header = ({ onSearch }: any) => {
   };
 
   const switchToLoginModal = () => {
-    toggleSignupModal();
-    toggleLoginModal();
+    setIsSignUpModalOpen(false);
+    setIsLoginModalOpen(true);
   };
 
   const switchToSignupModal = () => {
-    toggleLoginModal();
-    toggleSignupModal();
+    setIsLoginModalOpen(false);
+    setIsSignUpModalOpen(true);
   };
 
   const switchToForgotPassModal = () => {
@@ -141,7 +141,7 @@ const Header = ({ onSearch }: any) => {
 
       {/* Login Modal */}
       {isLoginModalOpen && (
-        <div>
+        <div key="login">
           <Login
             switchToSignupModal={switchToSignupModal}
             toggleLoginModal={toggleLoginModal}
@@ -151,7 +151,7 @@ const Header = ({ onSearch }: any) => {
       )}
       {/* Signup Modal */}
       {isSignUpModalOpen && (
-        <div>
+        <div key="signup">
           <SignUp
             switchToLoginModal={switchToLoginModal}
             toggleSignupModal={toggleSignupModal}

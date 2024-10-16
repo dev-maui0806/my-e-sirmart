@@ -127,6 +127,7 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
         style={{
           width: "100%",
           backgroundColor: "#F4F6FB",
+          padding: 0
         }}
       >
         <div className="w-full flex flex-row justify-between items-center py-3 px-4 border-b bg-white">

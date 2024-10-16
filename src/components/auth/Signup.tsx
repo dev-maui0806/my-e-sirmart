@@ -25,8 +25,8 @@ const Signup: React.FC<SignupProps> = ({
   switchToLoginModal,
   toggleSignupModal,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showRepeatPassword, setShowRepeatPassword] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -136,7 +136,7 @@ const Signup: React.FC<SignupProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div key="signup-modal" className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="max-w-screen-lg m-0 sm:m-28 bg-white shadow sm:rounded-lg flex justify-center flex-1 relative">
           <button
             className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 focus:outline-none"

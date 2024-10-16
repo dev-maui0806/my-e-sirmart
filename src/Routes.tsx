@@ -33,7 +33,7 @@ const AppWithRouting = () => {
       <Route
         path="/prn/:name/prid/:id"
         element={
-          <Suspense fallback={<Loader fullscreen />}>
+          <Suspense fallback={<Loader />}>
             <Layout component={<ProductView />} onSearch={onSearch}/>
           </Suspense>
         }
