@@ -7,6 +7,7 @@ import {
 } from "../../services/api/products";
 import ProductCard from "../ProductCard";
 import { Loader } from "../shared";
+import { Empty } from "antd";
 
 const categories = [
   { name: "All", icon: "0.webp" },
@@ -79,21 +80,22 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
           display: "flex",
           flexDirection: "column",
           overflowY: "auto",
-          scrollbarWidth: 'none'
+          scrollbarWidth: "none",
         }}
       >
         {categories.map((cat) => (
           <button
             key={cat.name}
-            className={`category-button ${category === cat.name ? "active" : ""
-              }`}
+            className={`category-button ${
+              category === cat.name ? "active" : ""
+            }`}
             onClick={() => setCategory(cat.name)}
             style={{
               display: "flex",
               alignItems: "center",
               padding: "0.75rem 1rem",
               border: "none",
-              borderBottom: '1px solid #dddddd',
+              borderBottom: "1px solid #dddddd",
               backgroundColor: category === cat.name ? "#F0F8E7" : "white",
               borderLeft:
                 category === cat.name
@@ -125,23 +127,46 @@ const ProductViewAll: React.FC<ProductViewAllProps> = ({ searchText }) => {
         }}
       >
         <div className="w-full flex flex-row justify-between items-center py-3 px-4 border-b bg-white">
-          <p className="font-medium text-[#333]">Total: {products.length} products</p>
+          <p className="font-medium text-[#333]">
+            Total: {products.length} products
+          </p>
         </div>
         <div
           className="_container"
           style={{
             width: "100%",
-            display: "flex",
             gap: "8px",
             padding: "8px",
             backgroundColor: "#F4F6FB",
-            flexWrap: 'wrap'
+            flexWrap: "wrap",
+            height: "90%",
+            display: "flex",
+            position: "relative",
           }}
         >
-          {loading ? <Loader /> :
-            products.length > 0 ? products.map((product) => (
+          {loading ? (
+            <Loader />
+          ) : products.length > 0 ? (
+            products.map((product) => (
               <ProductCard key={product.id} data={product} />
-            )) : <h1>No data</h1>}
+            ))
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                gap: "8px",
+                padding: "8px",
+                backgroundColor: "#F4F6FB",
+                flexWrap: "wrap",
+                height: "90%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Empty />
+            </div>
+          )}
         </div>
       </div>
     </div>
