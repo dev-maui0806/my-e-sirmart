@@ -23,7 +23,6 @@ const Signup: React.FC<SignupProps> = ({
   switchToLoginModal,
   toggleSignupModal,
 }) => {
-  console.log(switchToLoginModal, toggleSignupModal);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -36,10 +35,6 @@ const Signup: React.FC<SignupProps> = ({
   const [isMobileView, setIsMobileView] = useState<boolean>(
     window.innerWidth <= 1023
   );
-  const [isExactWidth1023, setIsExactWidth1023] = useState<boolean>(
-    window.innerWidth === 1023
-  );
-
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -127,16 +122,6 @@ const Signup: React.FC<SignupProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsExactWidth1023(window.innerWidth <= 1023);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
     <>
       <div
@@ -145,7 +130,7 @@ const Signup: React.FC<SignupProps> = ({
       >
         <div className="max-w-screen-lg m-0 sm:m-28 bg-white shadow sm:rounded-lg flex justify-center flex-1 relative">
           <button
-            className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 focus:outline-none"
+            className="absolute top-8 right-4 text-gray-700 hover:text-gray-900 focus:outline-none"
             onClick={toggleSignupModal}
           >
             <svg
@@ -177,13 +162,14 @@ const Signup: React.FC<SignupProps> = ({
                     useOneTap
                     shape="rectangular"
                     width="250px"
+                    text="signup_with"
                   />
                 </GoogleOAuthProvider>
               </div>
 
               <div className="flex items-center justify-center my-6">
                 <div className="flex-grow h-px bg-gray-300"></div>{" "}
-                <span className="px-3 text-gray-500 text-sm">or</span>{" "}
+                <span className="px-3 text-gray-500 text-sm">or </span>{" "}
                 <div className="flex-grow h-px bg-gray-300"></div>{" "}
               </div>
 
@@ -273,10 +259,9 @@ const Signup: React.FC<SignupProps> = ({
                 </div>
               </div>
 
-              {!isExactWidth1023 && (
                 <div
                   onClick={handleRegister}
-                  className="w-full cursor-pointer mt-7 py-4 flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
+                  className="w-full cursor-pointer mt-7 py-4 hidden lg:flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
                 >
                   {loading ? (
                     <Spin
@@ -287,7 +272,6 @@ const Signup: React.FC<SignupProps> = ({
                     "SIGN UP"
                   )}
                 </div>
-              )}
 
               {isMobileView && (
                 <div className="flex flex-row justify-between items-center">
@@ -301,7 +285,7 @@ const Signup: React.FC<SignupProps> = ({
                         style={{ marginRight: "15px", color: "#fff" }}
                       />
                     ) : (
-                      "SIGN UP"
+                      "SIGN UP111"
                     )}
                   </div>
                   <div

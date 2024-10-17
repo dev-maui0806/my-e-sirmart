@@ -7,6 +7,8 @@ import {
 } from "@ant-design/icons";
 import { notification } from "antd";
 import { Link } from "react-router-dom";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
 import image from "../../assets/logo.png";
 import { CartButton } from "../cart";
 import LocationPicker from "../LocationPicker";
@@ -17,9 +19,12 @@ import Order from "./Order";
 import ForgotPassword from "../auth/ForgotPass";
 import "./style.css";
 import "./style1.css";
+import { setLoginStatus } from "../../store/status";
 
 const Header = ({ onSearch }: any) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const { isLogin } =
+    useAppSelector((state) => state.status);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
@@ -29,7 +34,7 @@ const Header = ({ onSearch }: any) => {
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
-      setIsLoggedIn(true);
+      setLoginStatus(true);
     }
   }, []);
 
@@ -69,7 +74,7 @@ const Header = ({ onSearch }: any) => {
       message: "Log-out successfully",
     });
     localStorage.removeItem("user");
-    setIsLoggedIn(false);
+    setLoginStatus(false);
     setTimeout(() => {
       window.location.reload();
     }, 500);
@@ -93,8 +98,8 @@ const Header = ({ onSearch }: any) => {
             <SearchBox onSearch={onSearch}/>
           </div>
           <div className="flex items-center _header_login justify-center cursor-pointer sm:hover:bg-gray-50 max-w-[80px] w-full group">
-            <span className="font-medium _text-default hidden sm:block">
-              {isLoggedIn ? (
+            <span className="font-medium _text-default block">
+              {isLogin ? (
                 <div className="flex justify-center items-center">
                   <div className="rounded-full flex justify-center items-center bg-white">
                     <HomeOutlined className="text-[20px] p-2" />

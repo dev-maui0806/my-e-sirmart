@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { LIST_PRODUCTS } from "../url.js";
+import { getLocation } from "../globalfunctions.js";
 
 export interface ProductSearchPayload {
   searchText: string;
@@ -12,22 +13,10 @@ export interface ProductSearchPayload {
   limit: number;
 }
 
-function getLocation() {
-  return new Promise((res, rej) => {
-    navigator.geolocation.getCurrentPosition(res, rej, {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0,
-    });
-  });
-}
-
 export const listProductsApi = async (payload: ProductSearchPayload) => {
   try {
-    const position: any = await getLocation();
-    const { longitude, latitude } = position?.coords || {};
-
-    // Ensure the payload is properly formatted
+    const { longitude, latitude }: any = await getLocation();
+    
     const response = await axios.post(LIST_PRODUCTS, payload, {
       headers: {
         "Content-Type": "application/json",

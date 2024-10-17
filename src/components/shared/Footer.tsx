@@ -139,7 +139,7 @@ const Footer = () => {
             <div className="flex flex-wrap gap-y-1">
               {allCategories.map((cat) => (
                 <div
-                  className="cursor-pointer text-[15px] _text-default xs:w-[25%]"
+                  className="cursor-pointer text-[15px] _text-default xs:w-[25%] w-[50%]"
                   key={cat.id}
                 >
                   <Link to={cat.link}>{cat.text}</Link>
@@ -148,7 +148,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="w-[50%]">
+          <div className="sm:w-[50%] w-[100%]">
             <h4 className="font-bold my-4 text-lg leading-none lg:mr-4">
               Contact Us
             </h4>

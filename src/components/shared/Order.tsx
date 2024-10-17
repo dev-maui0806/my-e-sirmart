@@ -209,7 +209,6 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
         });
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        localStorage.removeItem("userInfo");
         setLoading(false);
         window.location.reload();
         return;

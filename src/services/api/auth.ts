@@ -57,7 +57,6 @@ export const userRegister = async (payload: REGISTERDATA) => {
     });
 
     if (response && response.data) {
-      localStorage.setItem("userInfo", JSON.stringify(response.data));
       return response.data.message || "Success";
     } else {
       throw new Error("Invalid response format from server");

@@ -1,4 +1,4 @@
-.address-selection {
+/* .address-selection {
   display: flex;
   flex-direction: row;
 }
@@ -61,4 +61,78 @@ input:focus::placeholder {
   cursor: pointer;
   border-radius: 5px;
 }
+
+
+   */
+
+   .address-selection {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* Center the content */
+    align-items: center; /* Align items vertically */
+    padding: 20px; /* Add padding around the modal */
+  }
+  
+  .panel {
+    background: white;
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Space out items evenly */
+    gap: 15px; /* Increased gap for better spacing */
+    width: 400px; /* Adjusted width for the panel */
+    border-radius: 8px; /* Rounded corners for the modal */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  .half-input-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* Space between half inputs */
+  }
+  
+  .half-input {
+    flex: 1; /* Allow inputs to grow equally */
+    min-width: 120px; /* Ensure a minimum width */
+  }
+  
+  .sb-title {
+    font-family: Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 18px; /* Increased font size for title */
+  }
+  
+  .sb-title-icon {
+    margin-right: 8px; /* Space between icon and title */
+  }
+  
+  .address-input {
+    height: 40px; /* Increased height for better usability */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners for input fields */
+    font-size: 16px; /* Increased font size for readability */
+    padding: 10px; /* Added padding inside input fields */
+    box-sizing: border-box; /* Ensures padding is included in height */
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #4285f4; /* Highlight border color on focus */
+  }
+  
+  .checkout-btn {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-size: 16px; /* Increased font size for button */
+  }
+  
+  .checkout-btn:hover {
+    background-color: #357ae8; /* Darker shade on hover */
+  }
   

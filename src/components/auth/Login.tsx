@@ -6,6 +6,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { LOGINDATA, userLogin } from "../../services/api/auth";
 import { notification, Spin } from "antd"; // Import Spin component from antd
 import { LoadingOutlined } from "@ant-design/icons";
+import { setLoginStatus } from "../../store/status";
+import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 interface LoginProps {
   switchToSignupModal: () => void;
@@ -18,15 +20,13 @@ const Login: React.FC<LoginProps> = ({
   switchToSignupModal,
   switchToForgotPassModal,
 }) => {
+  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isMobileView, setIsMobileView] = useState<boolean>(
     window.innerWidth <= 1023
-  );
-  const [isExactWidth1023, setIsExactWidth1023] = useState<boolean>(
-    window.innerWidth === 1023
   );
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -46,14 +46,11 @@ const Login: React.FC<LoginProps> = ({
       notification.success({
         message: "Login successfully",
       });
-
+      dispatch(setLoginStatus(true));
       localStorage.setItem("user", JSON.stringify(response));
 
       toggleLoginModal();
     } catch (error) {
-      notification.error({
-        message: "Login failed. Please try again.",
-      });
       console.error("Login error:", error);
     } finally {
       setLoading(false);
@@ -65,19 +62,6 @@ const Login: React.FC<LoginProps> = ({
       setIsMobileView(window.innerWidth <= 1023);
     };
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsExactWidth1023(window.innerWidth <= 1023); // Update state when width is exactly 1023px
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup event listener
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -195,21 +179,19 @@ const Login: React.FC<LoginProps> = ({
                   forgot password?
                 </a>
               </div>
-              {!isExactWidth1023 && (
-                <div
-                  onClick={handleLogin}
-                  className="w-full cursor-pointer mt-4 py-4 flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
-                >
-                  {loading ? (
-                    <Spin
-                      indicator={<LoadingOutlined spin />}
-                      style={{ marginRight: "15px", color: "#fff" }}
-                    />
-                  ) : (
-                    "SIGN IN"
-                  )}
-                </div>
+            <div
+              onClick={handleLogin}
+              className="w-full cursor-pointer hidden mt-4 py-4 lg:flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
+            >
+              {loading ? (
+                <Spin
+                  indicator={<LoadingOutlined spin />}
+                  style={{ marginRight: "15px", color: "#fff" }}
+                />
+              ) : (
+                "SIGN IN"
               )}
+            </div>
               {isMobileView && (
                 <div className="flex flex-row justify-between items-center">
                   <div

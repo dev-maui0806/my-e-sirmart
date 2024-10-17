@@ -73,8 +73,8 @@ const CartButton = () => {
 
   return (
     <div
-      style={{ display: isMobile ? "none" : "block" }}
-      className="flex items-center rounded-[6px] min-w-[112px] h-[50px] py-2 px-3 gap-2 font-bold text-sm bg-[#0c831f] cursor-pointer text-white"
+      style={{ display: isMobile ? "none" : "" }}
+      className="fixed bottom-0 w-full flex flex-row justify-between items-center z-100 rounded-[6px] min-w-[112px] h-[50px] py-2 px-3 gap-2 font-bold text-sm bg-[#0c831f] cursor-pointer text-white"
       onClick={() => dispatch(showCart())}
     >
       <FaShoppingCart size={24} className="_wiggle" />

@@ -16,12 +16,14 @@ const AddToCartButton = ({ product, size }: ButtonProps) => {
   const [itemCount, setItemCount] = useState<number>(0);
 
   useEffect(() => {
-    const storedProduct = cartItems.find(
+    const storedProduct = Object.values(cartItems).flat().find(
       (item: CartItem) => item.product.id === product.id
     );
-
+  
     if (storedProduct) {
       setItemCount(storedProduct.quantity);
+    } else {
+      setItemCount(0); // Reset to 0 if not found
     }
   }, [product.id, cartItems]);
 
@@ -32,37 +34,37 @@ const AddToCartButton = ({ product, size }: ButtonProps) => {
     if (isAdding) {
       dispatch(addItem({ ...product }));
     } else {
-      dispatch(removeItem(product.id));
+      if (itemCount > 0) {
+        dispatch(removeItem({ id: product.id, storeId: product.shopId }));
+      }
     }
 
     setItemCount(newCount);
 
     const storedProducts = localStorage.getItem("cartProducts");
-    let cartProducts = storedProducts ? JSON.parse(storedProducts) : [];
+    let cartProducts: CartProduct[] = storedProducts ? JSON.parse(storedProducts) : [];
 
     const productIndex = cartProducts.findIndex(
       (item: CartProduct) => item.id === product.id
     );
 
-    if (isAdding) {
-      if (productIndex !== -1) {
-        cartProducts[productIndex].quantity += 1;
-      } else {
-        cartProducts.push({ ...product, quantity: 1 });
-      }
-    } else {
-      if (productIndex !== -1) {
-        if (cartProducts[productIndex].quantity > 1) {
-          cartProducts[productIndex].quantity -= 1;
-        } else {
-          cartProducts = cartProducts.filter(
-            (item: CartProduct) => item.id !== product.id
-          );
-        }
-      }
-    }
+    // if (isAdding) {
+    //   if (productIndex !== -1) {
+    //     cartProducts[productIndex].quantity += 1;
+    //   } else {
+    //     cartProducts.push({ ...product, quantity: 1 });
+    //   }
+    // } else {
+    //   if (productIndex !== -1) {
+    //     if (cartProducts[productIndex].quantity > 1) {
+    //       cartProducts[productIndex].quantity -= 1;
+    //     } else {
+    //       cartProducts.splice(productIndex, 1); // Use splice for better performance
+    //     }
+    //   }
+    // }
 
-    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+    // localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
   };
 
   const handleItemAdd = (e: React.MouseEvent<HTMLButtonElement>) => {

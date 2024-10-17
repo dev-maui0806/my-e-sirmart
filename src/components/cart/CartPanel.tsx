@@ -1,33 +1,23 @@
 import { notification, Spin, Tag, Modal } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import delivery from "../../assets/fast-delivery.png";
-import gross from "../../assets/gross.png";
-import handing from "../../assets/handing.png";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { ComapnyDescription, CompanyName, razorpayKeyId, SERVER_URL } from "../../services/url";
 import { orderCreate, verifyPaymentOnBackend } from "../../services/api/order";
-import {
-  listProductsApi,
-  ProductSearchPayload,
-} from "../../services/api/products";
 import { hideCart } from "../../store/ui";
-import { shuffleItems } from "../../utils/helper";
-import { CartItem, ProductItem } from "../../utils/types";
+import { setBillAmount, setCartItems, setTotalQuantity } from "../../store/cart";
+import { CartItem } from "../../utils/types";
 import AddToCartButton from "../shared/AddToCartButton";
 import Login from "../auth/Login";
 import SignUp from "../auth/Signup";
-import { ComapnyDescription, CompanyName, razorpayKeyId, SERVER_URL } from "../../services/url";
-import { setBillAmount, setCartItems, setTotalQuantity } from "../../store/cart";
 import AddressSelection from "../addressSection";
-
-type UserInfo = {
-  username: string;
-  email: string;
-  phone_number: string;
-} | null;
+import handing from "../../assets/handing.png";
+import delivery from "../../assets/fast-delivery.png";
+import gross from "../../assets/gross.png";
+import { getLocation } from "../../services/globalfunctions";
 
 const CartPanelItem = (props: CartItem) => {
   const { image, title, price, newPrice } = props.product;
@@ -43,7 +33,7 @@ const CartPanelItem = (props: CartItem) => {
         </div>
       </div>
       <div className="text-left flex flex-col flex-1">
-        <div className="_text-default text-[15px] leading-tight mb-2">
+        <div className="_text-default text-[15px] leading-tight mb-2" style={{lineBreak: "anywhere"}}>
           {title}
         </div>
         <div className="flex items-center justify-between mt-auto">
@@ -70,91 +60,39 @@ const CartPanelItem = (props: CartItem) => {
 
 const CartPanel = () => {
   const dispatch = useAppDispatch();
-  const { totalQuantity, cartItems, billAmount, totalAmount } =
+  const { totalQuantity, cartItems, billAmount } =
     useAppSelector((state) => state.cart);
+  const { isLogin } = useAppSelector((state) => state.status);
 
-  const [topProducts, setTopProducts] = useState<ProductItem[]>([]);
-  const [isUserInfo, setIsUserInfo] = useState<UserInfo>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState<boolean>(false);
 
-  const [loginStatus, setLoginStatus] = useState<boolean>(false);
   const [isProceedStatus, setProceedStatus] = useState<boolean>(false);
   const [addressData, setAddressData] = useState<any>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [lat, setLat] = useState<any>();
+  const [lng, setLng] = useState<any>();
 
-  useEffect(() => {
-    const userInformation = localStorage.getItem("userInfo");
-
-    if (userInformation) {
-      try {
-        const parsedUserInfo = JSON.parse(userInformation);
-        setIsUserInfo(parsedUserInfo);
-      } catch (error) {
-        console.error(
-          "Failed to parse user information from localStorage:",
-          error
-        );
-      }
-    } else {
-      setIsUserInfo(null);
-    }
-  }, []);
 
   const toggleLoginModal = () => {
     setIsLoginModalOpen(!isLoginModalOpen);
+    setIsSignUpModalOpen(false);
   };
 
-  const toggleSignupModal = () => {
+  const toggleSignUpModal = () => {
     setIsSignUpModalOpen(!isSignUpModalOpen);
+    setIsLoginModalOpen(false);
   };
 
   const switchToSignUpModal = () => {
-    setIsLoginModalOpen(false); // Close login modal
-    setIsSignUpModalOpen(true); // Open sign-up modal
+    setIsLoginModalOpen(false);
+    setIsSignUpModalOpen(true);
   };
 
   const switchToLoginModal = () => {
-    setIsSignUpModalOpen(false); // Close sign-up modal
-    setIsLoginModalOpen(true); // Open login modal
+    setIsSignUpModalOpen(false);
+    setIsLoginModalOpen(true);
   };
-
-  const switchToForgotPassModal = () => {
-    
-  }
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const data: ProductSearchPayload = {
-        searchText: "",
-        shopId: "",
-        category: "",
-        nearby: false,
-        page: 1,
-        limit: 50,
-      };
-      try {
-        const productItems = await listProductsApi(data); // Await the promise
-        const allProducts: ProductItem[] = [];
-
-        productItems.forEach((obj: any) => {
-          const items = obj.products.map((product: any) => product);
-          allProducts.push(...items);
-        });
-
-        const addedProducts = cartItems.map((item) => item.product.id);
-        const otherProducts = allProducts.filter(
-          (item) => !addedProducts.includes(item._id.toString())
-        );
-        const shuffledProducts = shuffleItems(otherProducts).slice(0, 10);
-        setTopProducts(shuffledProducts);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      }
-    };
-
-    fetchProducts();
-  }, [cartItems]);
 
   const clearCart = () => {
     localStorage.removeItem("cartProducts");
@@ -168,14 +106,40 @@ const CartPanel = () => {
     setIsAddressModalOpen(!isAddressModalOpen);
   };
 
-  const handleAddressSelect = (latitude: number, longitude: number) => {
-    setAddressData({ lat: latitude, lng: longitude });
+  const handleAddressSelect = (address: string) => {
+    setAddressData({ lat, lng, address });
     setIsAddressModalOpen(false);
   };
 
   const initiatePayment = async () => {
     if (!addressData) {
-      toggleAddressModal();
+      getLocation()
+        .then(({ longitude, latitude }: any) => {
+          setLat(latitude);
+          setLng(longitude);
+          toggleAddressModal(); // Open address modal if address not set
+        })
+        .catch((error) => {
+          console.error("Error getting location:", error);
+          let errorMessage;
+          switch (error.code) {
+            case 1:
+              errorMessage = "User denied Geolocation";
+              break;
+            case 2:
+              errorMessage = "Position unavailable";
+              break;
+            case 3:
+              errorMessage = "Timeout";
+              break;
+            default:
+              errorMessage = "An unknown error occurred";
+          }
+
+          notification.error({
+            message: errorMessage
+          });
+        });
       return;
     }
 
@@ -226,9 +190,9 @@ const CartPanel = () => {
           });
       },
       prefill: {
-        name: isUserInfo?.username || "Guest",
-        email: isUserInfo?.email,
-        contact: isUserInfo?.phone_number,
+        name: "Your Name",
+        email: "Your email",
+        contact: "Your Phone Number",
       },
       theme: {
         // color: "#61dafb",
@@ -257,17 +221,60 @@ const CartPanel = () => {
     });
   };
 
-  useEffect(() => {
-    const loginData = localStorage.getItem("user");
-
-    if (loginData) {
-      setLoginStatus(true);
-    } else {
-      setLoginStatus(false);
-    }
-  }, []);
-
   const adjustedBillAmount = billAmount < 100 ? billAmount + 15 : billAmount;
+
+  // Function to group cart items by shopId
+  const groupItemsByShop = (items: { [key: string]: CartItem[] }) => {
+    const groupedItems: { [key: string]: CartItem[] } = {};
+    
+    Object.keys(items).forEach((shopId) => {
+      items[shopId].forEach((item) => {
+        if (!groupedItems[item.product.shopId]) {
+          groupedItems[item.product.shopId] = [];
+        }
+        groupedItems[item.product.shopId].push(item);
+      });
+    });
+
+    return groupedItems;
+  };
+
+  // Calculate totals for each shop
+  const calculateTotalsByShop = (groupedItems: { [key: string]: CartItem[] }) => {
+    let overallTotal = 0; // Initialize overall total
+  
+    const shopTotals = Object.keys(groupedItems).map((shopId) => {
+      const items = groupedItems[shopId];
+      const total = items.reduce((sum, item) => sum + item.product.newPrice * item.quantity, 0);
+      const totalOrigin = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+      const handlingCharge = 2; // Assuming a fixed handling charge
+      const deliveryCharge = total > 100 ? 0 : 15; // Free delivery if total is above 100
+      const savedPrice = totalOrigin - total;
+  
+      // Add the current shop's total to the overall total
+      overallTotal += total + handlingCharge + deliveryCharge;
+  
+      return {
+        shopId,
+        items,
+        total,
+        savedPrice,
+        grandTotal: total + handlingCharge + deliveryCharge,
+        deliveryCharge,
+        handlingCharge,
+      };
+    });
+  
+    return {
+      shopTotals, // Return the array of shop totals
+      overallTotal, // Return the overall total price across all shops
+    };
+  };
+
+  const groupedItems = groupItemsByShop(cartItems);
+  const totalsByShop = calculateTotalsByShop(groupedItems);
+  const shopTotals = totalsByShop.shopTotals;
+  const overallTotal = totalsByShop.overallTotal;
 
   return (
     <div className="fixed inset-0 h-screen w-screen z-50 overflow-hidden p-4">
@@ -287,7 +294,7 @@ const CartPanel = () => {
             onClick={() => {!isProceedStatus ? dispatch(hideCart()) : null}}
           />
         </div>
-        {totalQuantity === 0 && cartItems.length === 0 ? (
+        {totalQuantity === 0 && Object.keys(cartItems).length === 0 ? (
           <div className="flex-1 bg-white p-6">
             <div className="flex flex-col gap-3 justify-center items-center text-center">
               <img src="empty-cart.webp" alt="" className="h-36 w-36" />
@@ -317,173 +324,190 @@ const CartPanel = () => {
                     boxShadow: "0.5px 0.1px 1px 1px #ede7e7",
                   }}
                 >
-                  <div className="flex flex-col px-4 pt-5">
-                    <div className="flex justify-between _text-muted text-xs">
-                      <span>shipment of&nbsp;{totalQuantity} items</span>
-                    </div>
-                    <p className="text-sm _text-default font-bold mb-1">
-                      Delivery in some times
-                    </p>
-                  </div>
-                  <div className="divide-y-1">
-                    {cartItems.length > 0
-                      ? cartItems.map((item) => (
-                          <CartPanelItem key={item.product.id} {...item} />
-                        ))
-                      : cartItems.map((item) => (
-                          <CartPanelItem key={item.product.id} {...item} />
-                        ))}
-                  </div>
-                </div>
-                <div
-                  className="bg-white"
-                  style={{
-                    borderRadius: "5px",
-                    boxShadow: "0.5px 0.1px 1px 1px #ede7e7",
-                  }}
-                >
-                  <div
-                    className="font-bold text-xl text-black pt-5 px-4"
-                    style={{ fontSize: "17px" }}
-                  >
-                    Bill Details
-                  </div>
-                  <div className="px-4 text-xs space-y-2 py-2">
-                    <div className="flex items-start justify-between _text-default">
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <img
-                          src={gross}
-                          alt="gross"
-                          style={{ width: "18px", marginRight: "5px" }}
-                        />
-                        <span>Items total</span>
-                        {totalAmount - billAmount > 0 && <Tag
-                          style={{
-                            backgroundColor: '#EDF4FF',
-                            borderColor: '#f0f5ff',
-                            color: 'rgb(37, 111, 239)',
-                            fontSize: '10px',
-                            fontWeight: 'bold',
-                            borderRadius: '4px',
-                            marginLeft: '5px'
-                          }}
-                        >
-                          Saved ₹{totalAmount - billAmount}
-                        </Tag>}
-                      </div>
-                      <span>
-                          {totalAmount - billAmount > 0 &&  <span
-                            style={{
-                              textDecorationLine: "line-through",
-                              marginRight: "5px",
-                            }}
-                          >
-                            ₹{totalAmount}
-                          </span>}
-                        <span>₹{billAmount}</span>
-                      </span>
-                    </div>
-                    <div className="flex items-start justify-between _text-default">
-                      <p className="flex flex-col">
+                  
+                  {shopTotals.length > 0 ? (
+                    <>
+                      <div className="divide-y-1">
+                        {
+                          shopTotals.map((shop) => (
+                            <div key={shop.shopId}>
+                              <div className="bg-white border-y _border-muted" style={{ borderRadius: "5px", boxShadow: "0.5px 0.1px 1px 1px #ede7e7" }}>
+                                <div className="flex flex-col px-4 pt-5">
+                                  <div className="flex justify-between _text-muted text-xs">
+                                    <span>Shipment of {shop.items.length} items from shop {shop.shopId}</span>
+                                  </div>
+                                  <div className="text-sm _text-default font-bold mb-1">
+                                    Bill Details for Shop {shop.shopId}
+                                  </div>
+                                </div>
+                                <div className="divide-y-1">
+                                  {shop.items.map((item) => (
+                                    <CartPanelItem key={item.product.id} {...item} />
+                                  ))}
+                                </div>
+                                <div className="px-4 text-xs space-y-2 py-2">
+                                  <div className="flex items-start justify-between _text-default">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <img
+                                        src={gross}
+                                        alt="gross"
+                                        style={{ width: "18px", marginRight: "5px" }}
+                                      />
+                                      <span>Items total</span>
+                                      {shop.savedPrice > 0 && <Tag
+                                        style={{
+                                          backgroundColor: '#EDF4FF',
+                                          borderColor: '#f0f5ff',
+                                          color: 'rgb(37, 111, 239)',
+                                          fontSize: '10px',
+                                          fontWeight: 'bold',
+                                          borderRadius: '4px',
+                                          marginLeft: '5px'
+                                        }}
+                                      >
+                                        Saved ₹{shop.savedPrice}
+                                      </Tag>}
+                                    </div>
+                                    <span>
+                                        {shop.savedPrice > 0 &&  <span
+                                          style={{
+                                            textDecorationLine: "line-through",
+                                            marginRight: "5px",
+                                          }}
+                                        >
+                                          ₹{shop.total + shop.savedPrice}
+                                        </span>}
+                                      <span>₹{shop.total}</span>
+                                    </span>
+                                  </div>
+                                  <div className="flex items-start justify-between _text-default">
+                                    <p className="flex flex-col">
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-start",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <img
+                                          src={delivery}
+                                          alt="delivery"
+                                          style={{ width: "20px", marginRight: "5px" }}
+                                        />
+                                        <span>Delivery charge</span>
+                                      </div>
+                                    </p>
+                                    {shop.deliveryCharge > 0 ? (
+                                      <span>₹{shop.deliveryCharge}</span>
+                                    ) : (
+                                      <span>
+                                        <span
+                                          style={{
+                                            textDecorationLine: "line-through",
+                                            marginRight: "5px",
+                                          }}
+                                        >
+                                          ₹15
+                                        </span>
+                                        <span
+                                          className="text-[#0c831f]"
+                                          style={{ fontSize: "13px" }}
+                                        >
+                                          Free
+                                        </span>
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-start justify-between _text-default">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <img
+                                        src={handing}
+                                        alt="Handing charge"
+                                        style={{ width: "17px", marginRight: "5px" }}
+                                      />
+                                      <span>Handling charge</span>
+                                    </div>
+                                    <span>₹{shop.handlingCharge}</span>
+                                  </div>
+                                  <div className="flex items-start justify-between text-[14px] text-black font-bold py-2">
+                                    <span style={{ color: "#404040" }}>Grand total</span>
+                                    <span>₹{shop.grandTotal}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        }
                         <div
+                          className="bg-white border-y _border-muted"
                           style={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
+                            borderRadius: "5px",
+                            boxShadow: "0.5px 0.1px 1px 1px #ede7e7",
                           }}
                         >
-                          <img
-                            src={delivery}
-                            alt="delivery"
-                            style={{ width: "20px", marginRight: "5px" }}
-                          />
-                          <span>Delivery charge</span>
+                          <div className="flex flex-col px-4 pt-2">
+                            <p className="text-sm _text-default font-bold mb-1">
+                              Delivery in some times
+                            </p>
+                            <span
+                              style={{
+                                fontSize: "13px",
+                                fontWeight: "500",
+                                fontStyle: "normal",
+                                fontFamily: "Okra",
+                                lineHeight: "15px",
+                                paddingBottom: "12px",
+                                color: "#828282",
+                              }}
+                            >
+                              Orders cannot be cancelled once packed for delivery. In
+                              case of unexpected delays, a refund will be provided, if
+                              applicable.
+                            </span>
+                          </div>
                         </div>
-                      </p>
-                      {billAmount > 100 ? (
-                        <span>
-                          <span
-                            style={{
-                              textDecorationLine: "line-through",
-                              marginRight: "5px",
-                            }}
-                          >
-                            ₹15
-                          </span>
-                          <span
-                            className="text-[#0c831f]"
-                            style={{ fontSize: "13px" }}
-                          >
-                            Free
-                          </span>
-                        </span>
-                      ) : (
-                        <span>₹15</span>
-                      )}
-                    </div>
-                    <div className="flex items-start justify-between _text-default">
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <img
-                          src={handing}
-                          alt="Handing charge"
-                          style={{ width: "17px", marginRight: "5px" }}
-                        />
-                        <span>Handling charge</span>
                       </div>
-                      <span>₹2</span>
+                    </>
+                  ) : (
+                    <div className="flex-1 bg-white p-6">
+                      <div className="flex flex-col gap-3 justify-center items-center text-center">
+                        <img src="empty-cart.webp" alt="" className="h-36 w-36" />
+                        <h3 className="font-bold text-lg leading-tight">
+                          You don't have any items in your cart
+                        </h3>
+                        <p className="text-sm _text-default mb-2">
+                          Your favourite items are just a click away
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => dispatch(hideCart())}
+                          className="bg-[#0c831f] text-white rounded-[8px] px-4 py-3 leading-none text-[13px] font-medium cursor-pointer"
+                        >
+                          Start Shopping
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-start justify-between text-[14px] text-black font-bold py-2">
-                      <span style={{ color: "#404040" }}>Grand total</span>
-                      <span>₹{adjustedBillAmount + 2}</span>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="bg-white border-y _border-muted"
-                  style={{
-                    borderRadius: "5px",
-                    boxShadow: "0.5px 0.1px 1px 1px #ede7e7",
-                  }}
-                >
-                  <div className="flex flex-col px-4 pt-2">
-                    <p className="text-sm _text-default font-bold mb-1">
-                      Delivery in some times
-                    </p>
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: "500",
-                        fontStyle: "normal",
-                        fontFamily: "Okra",
-                        lineHeight: "15px",
-                        paddingBottom: "12px",
-                        color: "#828282",
-                      }}
-                    >
-                      Orders cannot be cancelled once packed for delivery. In
-                      case of unexpected delays, a refund will be provided, if
-                      applicable.
-                    </span>
-                  </div>
+                  )}
+                  
                 </div>
               </div>
             </div>
             <div
               className="sticky bottom-0 bg-white px-4 pt-2 pb-4 min-h-[68px] _shadow_sticky"
               onClick={() => {
-                if (!loginStatus) {
+                if (!isLogin) {
                   toggleLoginModal();
                 } else {
                   initiatePayment();
@@ -495,13 +519,13 @@ const CartPanel = () => {
                 <div className="font-bold">&nbsp; &middot; &nbsp;</div>
                 <div>
                   <span className="font-extrabold">
-                    ₹{adjustedBillAmount + 2}
+                    ₹{overallTotal}
                   </span>
                 </div>
                 <div className="ml-auto flex items-center font-bold">
                   {!isProceedStatus ? (
                     <>
-                      {!loginStatus ? "Login to " : null}Proceed
+                      {!isLogin ? "Login to " : null}Proceed
                     </>
                   ) : (
                     <Spin 
@@ -515,28 +539,28 @@ const CartPanel = () => {
             </div>
 
             <Modal
-              title="Select Address"
+              // title="Your Address"
               visible={isAddressModalOpen}
               onCancel={toggleAddressModal}
               footer={null}
-              width={1000}
+              centered
             >
-              <AddressSelection onAddressSelect={handleAddressSelect} />
+              <AddressSelection onAddressSelect={handleAddressSelect} lat={lat} lng={lng}/>
             </Modal>
             {/* Render Login Modal */}
             {isLoginModalOpen && (
               <Login
                 toggleLoginModal={toggleLoginModal}
                 switchToSignupModal={switchToSignUpModal}
-                switchToForgotPassModal={switchToForgotPassModal}
+                switchToForgotPassModal={() => {}}
               />
             )}
 
             {/* Render Sign Up Modal */}
             {isSignUpModalOpen && (
               <SignUp
+                toggleSignupModal={toggleSignUpModal}
                 switchToLoginModal={switchToLoginModal}
-                toggleSignupModal={toggleSignupModal}
               />
             )}
           </>
