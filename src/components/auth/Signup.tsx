@@ -177,7 +177,7 @@ const Signup: React.FC<SignupProps> = ({
                 <div className="w-full flex flex-row">
                   <div className="border border-gray-300 w-full rounded-lg">
                     <input
-                      className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                      className="w-full px-5 py-2 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                       type="text"
                       placeholder="FirstName"
                       value={firstName}

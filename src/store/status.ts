@@ -5,7 +5,7 @@ type InitialState = {
 };
 
 const initialState: InitialState = {
-    isLogin: true
+    isLogin: false
 };
 
 const status = createSlice({

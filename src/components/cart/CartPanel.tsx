@@ -18,6 +18,7 @@ import handing from "../../assets/handing.png";
 import delivery from "../../assets/fast-delivery.png";
 import gross from "../../assets/gross.png";
 import { getLocation } from "../../services/globalfunctions";
+import { setLoginStatus } from "../../store/status";
 
 const CartPanelItem = (props: CartItem) => {
   const { image, title, price, newPrice } = props.product;
@@ -111,7 +112,7 @@ const CartPanel = () => {
     setIsAddressModalOpen(false);
   };
 
-  const initiatePayment = async () => {
+  const createOrders = async () => {
     if (!addressData) {
       getLocation()
         .then(({ longitude, latitude }: any) => {
@@ -144,84 +145,83 @@ const CartPanel = () => {
     }
 
     setProceedStatus(true);
-    const response = await orderCreate(adjustedBillAmount);
+    const response = await orderCreate(shopTotals);
     
-    if (response?.status === 401) {
-      notification.error({
-        message: "Proceed Failed, Please login again!"
-      });
-      localStorage.removeItem("user");
-      setProceedStatus(false);
-      return;
-    }
+    // if (response?.status === 401) {
+    //   notification.error({
+    //     message: "Proceed Failed, Please login again!"
+    //   });
+    //   localStorage.removeItem("user");
+    //   dispatch(setLoginStatus(false));
+    //   setProceedStatus(false);
+    //   return;
+    // }
 
-    const data = response?.data;
+    // const data = response?.data;
     
-    const options: any = {
-      key: razorpayKeyId,
-      amount: data.amount,
-      currency: data.currency,
-      name: CompanyName,
-      description: ComapnyDescription,
-      order_id: data.id,
-      handler: (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-        notification.success({
-          message: "Payment Successful",
-          description: `Your payment of ₹${data.amount / 100} has been successfully processed. Thank you for your purchase!`,
-        });
+    // const options: any = {
+    //   key: razorpayKeyId,
+    //   amount: data.amount,
+    //   currency: data.currency,
+    //   name: CompanyName,
+    //   description: ComapnyDescription,
+    //   order_id: data.id,
+    //   handler: (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+    //     notification.success({
+    //       message: "Payment Successful",
+    //       description: `Your payment of ₹${data.amount / 100} has been successfully processed. Thank you for your purchase!`,
+    //     });
 
-        verifyPaymentOnBackend({...response, amount: data.amount, currency: data.currency, addressData: addressData})
-          .then((result) => {
-            console.log(result);
+    //     verifyPaymentOnBackend({...response, amount: data.amount, currency: data.currency, addressData: addressData})
+    //       .then((result) => {
+    //         console.log(result);
 
-            clearCart();
-            notification.success({
-              message: "Payment Verification Successful",
-              description: "Your payment has been verified and your order is confirmed.",
-            });
-            setProceedStatus(false);
-          })
-          .catch((error) => {
-            notification.error({
-              message: "Payment Verification Failed",
-              description: error?.response?.data?.message || "An error occurred during payment verification.",
-            });
-            setProceedStatus(false);
-          });
-      },
-      prefill: {
-        name: "Your Name",
-        email: "Your email",
-        contact: "Your Phone Number",
-      },
-      theme: {
-        // color: "#61dafb",
-        color: "#3399cc"
-      },
-      modal: {
-        ondismiss: () => {
-          notification.warning({
-            message: "Payment Cancelled",
-            description: "You closed the payment window. If this was a mistake, you can retry the payment.",
-          });
-          setProceedStatus(false);
-        },
-      },
-    };
+    //         clearCart();
+    //         notification.success({
+    //           message: "Payment Verification Successful",
+    //           description: "Your payment has been verified and your order is confirmed.",
+    //         });
+    //         setProceedStatus(false);
+    //       })
+    //       .catch((error) => {
+    //         notification.error({
+    //           message: "Payment Verification Failed",
+    //           description: error?.response?.data?.message || "An error occurred during payment verification.",
+    //         });
+    //         setProceedStatus(false);
+    //       });
+    //   },
+    //   prefill: {
+    //     name: "Your Name",
+    //     email: "Your email",
+    //     contact: "Your Phone Number",
+    //   },
+    //   theme: {
+    //     // color: "#61dafb",
+    //     color: "#3399cc"
+    //   },
+    //   modal: {
+    //     ondismiss: () => {
+    //       notification.warning({
+    //         message: "Payment Cancelled",
+    //         description: "You closed the payment window. If this was a mistake, you can retry the payment.",
+    //       });
+    //       setProceedStatus(false);
+    //     },
+    //   },
+    // };
 
-    const rzp = new window.Razorpay(options);
+    // const rzp = new window.Razorpay(options);
 
-    rzp.open();
+    // rzp.open();
 
-    rzp.on('payment.failed', (response: any) => {
-      notification.error({
-        message: "Payment Failed",
-        description: `Payment failed due to: ${response.error.description}. Please try again or use another payment method.`,
-      });
-    });
+    // rzp.on('payment.failed', (response: any) => {
+    //   notification.error({
+    //     message: "Payment Failed",
+    //     description: `Payment failed due to: ${response.error.description}. Please try again or use another payment method.`,
+    //   });
+    // });
   };
-
-  const adjustedBillAmount = billAmount < 100 ? billAmount + 15 : billAmount;
 
   // Function to group cart items by shopId
   const groupItemsByShop = (items: { [key: string]: CartItem[] }) => {
@@ -510,7 +510,7 @@ const CartPanel = () => {
                 if (!isLogin) {
                   toggleLoginModal();
                 } else {
-                  initiatePayment();
+                  createOrders();
                 }
               }}
             >

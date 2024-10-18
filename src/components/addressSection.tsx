@@ -102,11 +102,11 @@ const AddressSelection: React.FC<{ lat: number; lng: number; onAddressSelect: (a
   };
 
   return (
-    <div className="address-selection">
-      <div className="panel">
+    <div className="flex flex-row justify-center items-center p-[20px]">
+      <div className="panel bg-white box-border p-[20px] flex flex-col justify-between gap-[15px] w-[400px] rounded-[8px]">
         <div className="flex items-center">
           <img
-            className="sb-title-icon"
+            className="mr-[8px]"
             src="https://fonts.gstatic.com/s/i/googlematerialicons/location_pin/v5/24px.svg"
             alt="Address Icon"
           />
@@ -154,7 +154,7 @@ const AddressSelection: React.FC<{ lat: number; lng: number; onAddressSelect: (a
           value={formData.country}
           onChange={handleInputChange}
         />
-        <button className="checkout-btn" onClick={handleAddressConfirm}>
+        <button className="checkout-btn bg-blue-500 hover:bg-blue-600 text-white cursor-pointer rounded-[5px] text-[16px] border-none p-[10px] transition-[0.3s]" onClick={handleAddressConfirm}>
           Confirm Address
         </button>
       </div>

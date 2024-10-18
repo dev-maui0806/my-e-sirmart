@@ -17,31 +17,33 @@ interface PaymentDetails {
   addressData: addressData;
 }
 
-export const orderCreate = async (adjustedBillAmount: number) => {
+export const orderCreate = async (orders: any) => {
   const userData = localStorage.getItem("user");
 
   if (userData) {
-    const accessToken: any = JSON.parse(userData);
-    try{
-      const response = await axios.post(
-        ORDERCREATEURL,
-        {
-          amount: adjustedBillAmount + 2,
-          currency: "INR",
-          receipt: "receipt#1",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.access_token}`,
-          },
-        }
-      );
-      return response;
-    } catch(error: any) {
-      return error.response;
-    }
-
+    // const accessToken: any = JSON.parse(userData);
+    // try{
+    //   const response = await axios.post(
+    //     ORDERCREATEURL,
+    //     {
+    //       amount: adjustedBillAmount + 2,
+    //       currency: "INR",
+    //       receipt: "receipt#1",
+    //     },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${accessToken.access_token}`,
+    //       },
+    //     }
+    //   );
+    //   return response;
+    // } catch(error: any) {
+    //   return error.response;
+    // }
+    console.log("orders.ts line44");
+    console.log(orders);
+    
   }
 };
 

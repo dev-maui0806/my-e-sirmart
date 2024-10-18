@@ -74,10 +74,7 @@ const Header = ({ onSearch }: any) => {
       message: "Log-out successfully",
     });
     localStorage.removeItem("user");
-    setLoginStatus(false);
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    dispatch(setLoginStatus(false));
   };
 
   return (
