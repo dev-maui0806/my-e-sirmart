@@ -11,8 +11,9 @@ import {
   googleLogout,
   GoogleOAuthProvider,
 } from "@react-oauth/google"; // Import Google login and logout
-import { jwtDecode } from "jwt-decode"; // Import jwt-decode library.
+ // Import jwt-decode library.
 import { GoogleLoginClientID } from "../../services/url";
+import { handleGoogleLoginSuccess, handleGoogleLoginError } from "../../services/globalfunctions";
 
 interface SignupProps {
   switchToLoginModal: () => void;
@@ -90,27 +91,6 @@ const Signup: React.FC<SignupProps> = ({
     }
   };
 
-  const handleGoogleLoginSuccess = (response: any) => {
-    if (response.error) {
-      console.log(`Error: ${response.error}`);
-      return false;
-    }
-
-    const decodedToken = jwtDecode(response.credential);
-    console.log("Decoded Token:", decodedToken);
-
-    notification.success({
-      message: "Logged in successfully with Google!",
-    });
-  };
-
-  const handleGoogleLoginError = () => {
-    console.log("error");
-    notification.error({
-      message: "Google Login Failed",
-    });
-  };
-
   useEffect(() => {
     console.log("loading signup");
     const handleResize = () => {
@@ -160,8 +140,8 @@ const Signup: React.FC<SignupProps> = ({
                     onSuccess={handleGoogleLoginSuccess}
                     onError={handleGoogleLoginError}
                     useOneTap
-                    shape="rectangular"
-                    width="250px"
+                    shape="square"
+                    width="366px"
                     text="signup_with"
                   />
                 </GoogleOAuthProvider>
@@ -177,7 +157,7 @@ const Signup: React.FC<SignupProps> = ({
                 <div className="w-full flex flex-row">
                   <div className="border border-gray-300 w-full rounded-lg">
                     <input
-                      className="w-full px-5 py-2 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                      className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                       type="text"
                       placeholder="FirstName"
                       value={firstName}
@@ -186,7 +166,7 @@ const Signup: React.FC<SignupProps> = ({
                   </div>
                   <div className="border border-gray-300 w-full rounded-lg">
                     <input
-                      className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                      className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                       type="text"
                       placeholder="LastName"
                       value={lastName}
@@ -197,7 +177,7 @@ const Signup: React.FC<SignupProps> = ({
 
                 <div className="border border-gray-300 w-full rounded-lg">
                   <input
-                    className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                    className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                     type="email"
                     placeholder="Email"
                     value={email}
@@ -207,7 +187,7 @@ const Signup: React.FC<SignupProps> = ({
 
                 <div className="border border-gray-300 w-full rounded-lg">
                   <input
-                    className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                    className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                     type="text"
                     placeholder="Phone Number"
                     value={phoneNumber}
@@ -218,7 +198,7 @@ const Signup: React.FC<SignupProps> = ({
                 <div className="w-full flex flex-row">
                   <div className="border border-gray-300 w-full rounded-lg relative">
                     <input
-                      className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                      className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
@@ -238,7 +218,7 @@ const Signup: React.FC<SignupProps> = ({
                   </div>
                   <div className="border border-gray-300 w-full rounded-lg relative">
                     <input
-                      className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                      className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                       type={showRepeatPassword ? "text" : "password"}
                       placeholder="Repeat Password"
                       value={confirmPassword}

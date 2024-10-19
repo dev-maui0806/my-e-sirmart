@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Space, notification, Popconfirm } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import "./style.css";
 import { getOrders } from "../../services/api/order";
 import axios from "axios";
 import { BASE_URL } from "../../services/url";
+import "./style.css";
 
 interface OrderProps {
   toggleOrderModal: () => void;
@@ -28,119 +28,316 @@ interface Order {
 }
 
 interface OrderType {
-  razorpayOrderId: string;
-  orders: Order[];
-  paymentStatus: string;
-  totalAmount: number;
-  createdAt: string;
+  orderId: string,
+  shopName: string,
+  products: ProductItem[],
+  price: number,
+  status: string,
+  createdAt: string
 }
 
-const columns: ColumnsType<OrderType> = [
-  {
-    title: "Razorpay Order ID",
-    dataIndex: "razorpayOrderId",
-    key: "razorpayOrderId",
-  },
-  {
-    title: "Total Amount",
-    dataIndex: "totalAmount",
-    key: "totalAmount",
-    align: "center",
-    render: (amount) => `₹${amount}`,
-  },
-  {
-    title: "Payment Status",
-    dataIndex: "paymentStatus",
-    key: "paymentStatus",
-    align: "center",
-  },
-  {
-    title: "Order Status",
-    dataIndex: "orderStatus",
-    key: "orderStatus",
-    align: "center",
-  },
-  {
-    title: "Created At",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    align: "center",
-    render: (date) => new Date(date).toLocaleString(), // Format the date as needed
-  },
-];
+
 
 const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
   const [orderData, setOrderData] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+
+  const CustomButton = ({ label, onClick, color, loading, disabled }: any) => {
+    return (
+      <button
+        onClick={onClick}
+        disabled={loading || disabled}
+        className={`py-1 w-[90px] rounded-[5px] flex justify-center items-center cursor-pointer 
+          ${color} ${loading || disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        {loading ? (
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            ></path>
+          </svg>
+        ) : (
+          label
+        )}
+      </button>
+    );
+  };
+
+  const columns: ColumnsType<OrderType> = [
+    {
+      title: "Order Id",
+      dataIndex: "orderId",
+      key: "orderId",
+    },
+    {
+      title: "Shop Name",
+      dataIndex: "shopName",
+      key: "shopName",
+    },
+    {
+      title: "Products",
+      dataIndex: "products",
+      key: "products",
+      render: (items: ProductItem[]) =>
+        items.map((item) => (
+          <div key={item.productId} className="product-item">
+            {item.productName} - ₹{item.price} x {item.quantity}
+          </div>
+        )),
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      align: "center",
+      render: (amount) => `₹${amount}`,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      render: (status) => status === "Shipped" ? "Out for delivery" : status
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      align: "center",
+      render: (date) => new Date(date).toLocaleString(), // Format the date as needed
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      align: "center",
+      render: (record) => (
+        <div className="flex flex-col gap-[5px]">
+          {record.status === "Created" && (
+            <CustomButton
+              label="Cancel"
+              onClick={(e: any) => handleCancelOrder(record.orderId, e)}
+              color="bg-red-500 hover:bg-red-600 text-white"
+              loading={loadingStates[record.orderId] || false}
+              disabled={loadingStates[record.orderId] || false}
+            />
+          )}
+
+          {record.status === "Delivered" && (
+            <CustomButton
+            label="Complete"
+            onClick={() => handleCompleteOrder(record.orderId)}
+            color="bg-green-500 hover:bg-green-600 text-white"
+            loading={loadingStates[record.orderId] || false}
+            disabled={loadingStates[record.orderId] || false}
+          />
+          )}
+      
+          {record.status === "Delivered" && (
+            <CustomButton
+              label="Refund"
+              onClick={() => handleRefundRequestOrder(record.orderId)}
+              color="bg-yellow-500 hover:bg-yellow-600 text-white"
+              loading={loadingStates[record.orderId] || false}
+              disabled={loadingStates[record.orderId] || false}
+            />
+          )}
+      
+          {record.status === "Cancelled" || record.status === "Delivered" ? (
+            <CustomButton
+              label="Delete"
+              onClick={() => handleDeleteOrder(record.orderId)}
+              color="bg-gray-500 hover:bg-gray-600 text-white"
+              loading={loadingStates[record.orderId] || false}
+              disabled={loadingStates[record.orderId] || false}
+            />
+          ) : null}
+      
+          {record.status === "Refund Approved" && (
+            <CustomButton
+              label="Delete"
+              onClick={() => handleDeleteOrder(record.orderId)}
+              color="bg-gray-500 hover:bg-gray-600 text-white"
+              loading={loadingStates[record.orderId] || false}
+              disabled={loadingStates[record.orderId] || false}
+            />
+          )}
+        </div>
+      )
+    },
+  ];
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  const handleChangeOrderStatus = async (order: Order) => {
+  const handleCancelOrder = async (orderId: string, e: any) => {
+    setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
+
     const userData = localStorage.getItem("user");
-  
+
     if (userData) {
       const token = JSON.parse(userData).access_token;
       const data = JSON.stringify({
-        status: "Delivered",
-        orderId: order.orderId
+        orderId,
       });
-  
-      const response = await axios.put(
-        `${BASE_URL}/orders/updateOrder`,
-        data,
-        {
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': `Bearer ${token}`
-        }
-      });
-  
-      console.log(response);
-  
-      if (response.data.success) {
-        notification.success({
-          message: response.data.message
-        });
 
-        setLoading(true);
-        fetchOrders();
+      try {
+        const response = await axios.put(
+          `${BASE_URL}/orders/cancelOrder`,
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          await fetchOrders();
+
+          notification.success({
+            message: response.data.message,
+          });
+        }
+      } catch (error) {
+        notification.error({
+          message: "Failed to cancel order.",
+        });
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [orderId]: false }));
       }
     }
   };
   
-  const handleCancel = async (order: Order) => {
+  const handleRefundRequestOrder = async (orderId: string) => {
+    setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
+  
     const userData = localStorage.getItem("user");
-
-    const amount = order.productItems.reduce((total, item) => total + item.price * item.quantity, 0);
-
+  
     if (userData) {
       const token = JSON.parse(userData).access_token;
       const data = JSON.stringify({
-        status: "Cancelled",
-        orderId: order.orderId,
-        amount: amount
+        orderId,
       });
   
-      const response = await axios.put(
-        `${BASE_URL}/orders/updateOrder`,
-        data,
-        {
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': `Bearer ${token}`
+      try {
+        const response = await axios.put(
+          `${BASE_URL}/orders/refundRequestOrder`,  // Example API endpoint for refund
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': `Bearer ${token}`,
+            },
+          }
+        );
+  
+        if (response.data.success) {
+          await fetchOrders();  // Refetch orders after successful refund
+          
+          notification.success({
+            message: response.data.message,
+          });
         }
+      } catch (error) {
+        notification.error({
+          message: "Failed to process refund.",
+        });
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [orderId]: false }));
+      }
+    }
+  };
+  
+  const handleCompleteOrder = async (orderId: string) => {
+    setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
+  
+    const userData = localStorage.getItem("user");
+  
+    if (userData) {
+      const token = JSON.parse(userData).access_token;
+      const data = JSON.stringify({
+        orderId,
       });
   
-      console.log(response);
+      try {
+        const response = await axios.put(
+          `${BASE_URL}/orders/completeOrder`,  // Example API endpoint for marking the order as complete
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': `Bearer ${token}`,
+            },
+          }
+        );
   
-      if (response.data.success) {
-        notification.success({
-          message: response.data.message
+        if (response.data.success) {
+          await fetchOrders();  // Refetch orders after successful completion
+          
+          notification.success({
+            message: response.data.message,
+          });
+        }
+      } catch (error) {
+        notification.error({
+          message: "Failed to complete order.",
         });
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [orderId]: false }));
+      }
+    }
+  };
   
-        fetchOrders();
+  const handleDeleteOrder = async (orderId: string) => {
+    setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
+  
+    const userData = localStorage.getItem("user");
+  
+    if (userData) {
+      const token = JSON.parse(userData).access_token;
+  
+      try {
+        const response = await axios.delete(
+          `${BASE_URL}/orders/deleteOrder/${orderId}`,  // Example API endpoint for deleting an order
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': `Bearer ${token}`,
+            },
+          }
+        );
+  
+        if (response.data.success) {
+          await fetchOrders();  // Refetch orders after successful deletion
+          
+          notification.success({
+            message: response.data.message,
+          });
+        }
+      } catch (error) {
+        notification.error({
+          message: "Failed to delete order.",
+        });
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [orderId]: false }));
       }
     }
   };
@@ -149,50 +346,24 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
     try {
       const data = await getOrders();
 
-      let availableOrderStatus: any = {
-        "Pending": {level: 0, value:"Pending"},
-        "Shipped": {level: 1, value:"Delivery in progress"},
-        "Delivered": {level: 2, value:"Delivered"},
-        "Cancelled": {level: 3, value:"Cancelled"}
-      }
-
-      let ordersData: any[] = [];
-      Object.entries(data).forEach(([razorpayOrderId, orderDetails]: any) => {
-        let ordersItems: any[] = [];
-        let orderStatus: any = {level: 3, value:"Cancelled"};
-
-        orderDetails.orders.forEach((order: any) => {
-          let productItems: any[] = [];
-          order.items.forEach((productItem: any) => {
-            productItems.push({
-              productId: productItem.productId._id,
-              productName: productItem.productId.name,
-              quantity: productItem.quantity,
-              price: productItem.price
-            })
-          });
-
-          if (availableOrderStatus[order.status].level <= orderStatus.level) {
-            orderStatus = availableOrderStatus[order.status];
+      const ordersData: any[] = data.map((item:any) => {
+        const products = item.items.map((product: any) => {
+          return {
+            productId: product.productId._id,
+            productName: product.productId.name,
+            price: product.price,
+            quantity: product.quantity
           }
-
-          ordersItems.push({
-            orderId: order._id,
-            shopId: order.shopId._id,
-            shopName: order.shopId.name,
-            productItems: productItems,
-            orderStatus: order.status
-          })
-        });
-
-        ordersData.push({
-          razorpayOrderId: razorpayOrderId,
-          orders: ordersItems,
-          paymentStatus: orderDetails.paymentStatus,
-          orderStatus: orderStatus.value,
-          totalAmount: orderDetails.totalAmount > 100 ? orderDetails.totalAmount+2 : orderDetails.totalAmount+2+15,
-          createdAt: orderDetails.createdAt
         })
+
+        return {
+          orderId: item.razorpay_order_id,
+          shopName: item.shopId.name,
+          products,
+          price: item.totalPrice,
+          status: item.status,
+          createdAt: item.created_at.toLocaleString()
+        }
       });
       setLoading(false);
       setOrderData(ordersData);
@@ -218,82 +389,6 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
     }
   };
 
-  const expandedRowRender = (record: OrderType) => {
-    const nestedColumns: ColumnsType<Order> = [
-      {
-        title: "Shop Name",
-        dataIndex: "shopName",
-        key: "shopName",
-      },
-      {
-        title: "Product Items",
-        dataIndex: "productItems",
-        key: "productItems",
-        render: (items: ProductItem[]) =>
-          items.map((item) => (
-            <div key={item.productId} className="product-item">
-              {item.productName} (x{item.quantity}) - ₹{item.price}
-            </div>
-          )),
-      },
-      {
-        title: "Order Status",
-        dataIndex: "orderStatus",
-        key: "orderStatus",
-        align: "center",
-        render: (item) => item === "Shipped" ? "Delivery in progress" : item
-      },
-      {
-        title: "Actions",
-        key: "actions",
-        width: "200px",
-        align: "center",
-        render: (_, order) => (
-          <Space size="middle">
-            {order.orderStatus === "Shipped" ? (
-              <Popconfirm
-                title="Confirm Delivery"
-                description="Are you sure you want to mark this order as delivered?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={() => handleChangeOrderStatus(order)}
-                okText="Yes"
-                cancelText="No"
-                okButtonProps={{ type: 'primary', ghost: true }}
-                cancelButtonProps={{ type: 'default', danger: true }}
-              >
-                <Button type="primary" ghost>Mark as Delivered</Button>
-              </Popconfirm>
-            ) : null}
-            {order.orderStatus === "Pending" ? (
-              <Popconfirm
-                title="Cancel Order"
-                description="Are you sure you want to cancel the order?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={() => handleCancel(order)}
-                okText="Yes"
-                cancelText="No"
-                okButtonProps={{ type: 'primary', ghost: true }}
-                cancelButtonProps={{ type: 'default', danger: true }}
-              >
-                <Button type="default" danger>Cancel</Button>
-              </Popconfirm>
-            ) : null}
-          </Space>
-        ),
-      },
-    ];
-  
-    return (
-      <Table
-        columns={nestedColumns}
-        dataSource={record.orders}
-        pagination={false}
-        rowKey="orderId"
-        style={{backgroundColor: "#70b55d", padding: "15px 11px 15px 0px"}}
-      />
-    );
-  };
-
   return (
     <div className="modal-overlay">
       <div className="modal-content-Order">
@@ -308,8 +403,7 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
         <Table
           columns={columns}
           dataSource={orderData}
-          expandable={{ expandedRowRender }}
-          rowKey="razorpayOrderId"
+          rowKey="orderId"
           pagination={false}
           bordered
           size="middle"

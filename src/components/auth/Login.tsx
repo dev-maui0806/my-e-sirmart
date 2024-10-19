@@ -8,6 +8,13 @@ import { notification, Spin } from "antd"; // Import Spin component from antd
 import { LoadingOutlined } from "@ant-design/icons";
 import { setLoginStatus } from "../../store/status";
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { GoogleLoginClientID } from "../../services/url";
+import { handleGoogleLoginSuccess, handleGoogleLoginError } from "../../services/globalfunctions";
+import {
+  GoogleLogin,
+  googleLogout,
+  GoogleOAuthProvider,
+} from "@react-oauth/google";
 
 interface LoginProps {
   switchToSignupModal: () => void;
@@ -125,10 +132,16 @@ const Login: React.FC<LoginProps> = ({
                 Sign In to Your Account
               </h2>
               <div className="flex justify-center items-center mt-10">
-                <button className="w-full max-w-xs flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out">
-                  <FcGoogle className="text-[30px] mr-2" />
-                  Continue with Google
-                </button>
+                <GoogleOAuthProvider clientId={GoogleLoginClientID}>
+                  <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginError}
+                    useOneTap
+                    shape="rectangular"
+                    width="330px"
+                    text="signin_with"
+                  />
+                </GoogleOAuthProvider>
               </div>
               <div className="flex items-center justify-center my-6">
                 <div className="flex-grow h-px bg-gray-300"></div>{" "}
@@ -138,7 +151,7 @@ const Login: React.FC<LoginProps> = ({
               <div className="space-y-4 flex justify-center items-center flex-col">
                 <div className="border border-gray-300 w-full rounded-lg">
                   <input
-                    className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                    className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                     type="email"
                     placeholder="Email"
                     value={email}
@@ -149,7 +162,7 @@ const Login: React.FC<LoginProps> = ({
                 </div>
                 <div className="border border-gray-300 w-full rounded-lg relative">
                   <input
-                    className="w-full px-5 py-7 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
+                    className="w-full px-5 py-4 rounded-lg font-medium bg-white border border-gray-300 placeholder-gray-500 text-sm focus:outline-none focus:border-[#06A67E]"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     value={password}

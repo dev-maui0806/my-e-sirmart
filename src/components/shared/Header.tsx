@@ -34,7 +34,7 @@ const Header = ({ onSearch }: any) => {
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
-      setLoginStatus(true);
+      dispatch(setLoginStatus(true));
     }
   }, []);
 

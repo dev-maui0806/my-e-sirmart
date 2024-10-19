@@ -145,17 +145,26 @@ const CartPanel = () => {
     }
 
     setProceedStatus(true);
-    const response = await orderCreate(shopTotals);
-    
-    // if (response?.status === 401) {
-    //   notification.error({
-    //     message: "Proceed Failed, Please login again!"
-    //   });
-    //   localStorage.removeItem("user");
-    //   dispatch(setLoginStatus(false));
-    //   setProceedStatus(false);
-    //   return;
-    // }
+    const response = await orderCreate(shopTotals, addressData);
+    setProceedStatus(false);
+    if (response?.status === 401) {
+      notification.error({
+        message: "Proceed Failed, Please login again!"
+      });
+      localStorage.removeItem("user");
+      dispatch(setLoginStatus(false));
+      setProceedStatus(false);
+      return;
+    } else if (response?.status === 500) {
+      notification.error({
+        message: "Order Creation Failed"
+      });
+      notification.error({
+        message: "Internal Server Error"
+      });
+    }
+
+    clearCart();
 
     // const data = response?.data;
     
@@ -176,7 +185,7 @@ const CartPanel = () => {
     //       .then((result) => {
     //         console.log(result);
 
-    //         clearCart();
+    //         
     //         notification.success({
     //           message: "Payment Verification Successful",
     //           description: "Your payment has been verified and your order is confirmed.",
@@ -284,7 +293,6 @@ const CartPanel = () => {
       />
       <aside
         className="_drawer flex flex-col overflow-y-auto overflow-x-hidden"
-        style={{ right: "15px" }}
       >
         <div className="sticky top-0 bg-white flex items-center justify-between p-4">
           <h2 className="font-extrabold text-2xl _text-default">My Cart</h2>

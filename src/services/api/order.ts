@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { ORDERCREATEURL, VERIFYPAYMENT, GETORDERS } from "../url";
+import { notification } from "antd";
 
 interface addressData {
   lat: number;
@@ -17,33 +18,36 @@ interface PaymentDetails {
   addressData: addressData;
 }
 
-export const orderCreate = async (orders: any) => {
+export const orderCreate = async (orders: any, addressData: any) => {
   const userData = localStorage.getItem("user");
 
   if (userData) {
-    // const accessToken: any = JSON.parse(userData);
-    // try{
-    //   const response = await axios.post(
-    //     ORDERCREATEURL,
-    //     {
-    //       amount: adjustedBillAmount + 2,
-    //       currency: "INR",
-    //       receipt: "receipt#1",
-    //     },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${accessToken.access_token}`,
-    //       },
-    //     }
-    //   );
-    //   return response;
-    // } catch(error: any) {
-    //   return error.response;
-    // }
-    console.log("orders.ts line44");
-    console.log(orders);
-    
+    const accessToken: any = JSON.parse(userData);
+    console.log(orders, addressData);
+    try{
+      const response = await axios.post(
+        ORDERCREATEURL,
+        {
+          orders,
+          addressData,
+          currency: "INR",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.access_token}`,
+          },
+        }
+      );
+      console.log(response.data);
+      return response;
+    } catch(error: any) {
+      return error.response;
+    }
+  } else {
+    notification.error({
+      message: "Please login!"
+    });
   }
 };
 
