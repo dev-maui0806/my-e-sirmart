@@ -13,20 +13,31 @@ import {
 } from "@react-oauth/google"; // Import Google login and logout
 // Import jwt-decode library.
 import { GoogleLoginClientID } from "../../services/url";
-import {
-  handleGoogleLoginSuccess,
-  handleGoogleLoginError,
-} from "../../services/api/auth";
+import { handleGoogleLoginError } from "../../services/api/auth";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { BASE_URL } from "../../services/url";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { setLoginStatus } from "../../store/status";
 
 interface SignupProps {
   switchToLoginModal: () => void;
   toggleSignupModal: () => void;
 }
 
+interface DecodedToken {
+  email: string;
+  name: string;
+  given_name: string;
+  family_name: string;
+}
+
 const Signup: React.FC<SignupProps> = ({
   switchToLoginModal,
   toggleSignupModal,
 }) => {
+  const dispatch = useAppDispatch();
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -92,6 +103,49 @@ const Signup: React.FC<SignupProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLoginSuccess = (response: any) => {
+    if (response.error) {
+      console.log(`Error: ${response.error}`);
+      return;
+    }
+
+    const decodedToken = jwtDecode<DecodedToken>(response.credential);
+
+    const data = {
+      email: decodedToken.email,
+      first_name: decodedToken.given_name,
+      last_name: decodedToken.family_name,
+    };
+
+    axios
+      .post(`${BASE_URL}/auth/loginWithGoogle`, data)
+      .then((response) => {
+        const tokenData = response.data; // This contains token_type, expires_in, access_token, and refresh_token
+
+        if (!tokenData?.access_token) {
+          throw new Error("No access token found in the response");
+        }
+
+        notification.success({
+          message: "Logged in successfully with Google!",
+        });
+
+        dispatch(setLoginStatus(true));
+
+        localStorage.setItem("user", JSON.stringify(tokenData));
+
+        toggleSignupModal();
+      })
+      .catch((err) => {
+        console.error("Error during Google login:", err.response);
+        notification.error({
+          message: "Google login failed!",
+          description:
+            "An error occurred during Google login. Please try again.",
+        });
+      });
   };
 
   useEffect(() => {
@@ -268,7 +322,7 @@ const Signup: React.FC<SignupProps> = ({
                         style={{ marginRight: "15px", color: "#fff" }}
                       />
                     ) : (
-                      "SIGN UP111"
+                      "SIGN UP"
                     )}
                   </div>
                   <div
