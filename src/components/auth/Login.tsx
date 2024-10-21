@@ -82,7 +82,7 @@ const Login: React.FC<LoginProps> = ({
   const handleGoogleLoginSuccess = (response: any) => {
     if (response.error) {
       console.log(`Error: ${response.error}`);
-      return false;
+      return;
     }
 
     const decodedToken = jwtDecode<DecodedToken>(response.credential);
@@ -96,19 +96,28 @@ const Login: React.FC<LoginProps> = ({
     axios
       .post(`${BASE_URL}/auth/loginWithGoogle`, data)
       .then((response) => {
-        const token = response.data.token; // Assuming token is in `response.data.token`
+        const tokenData = response.data; // This contains token_type, expires_in, access_token, and refresh_token
+
+        if (!tokenData?.access_token) {
+          throw new Error("No access token found in the response");
+        }
+
         notification.success({
           message: "Logged in successfully with Google!",
         });
+
         dispatch(setLoginStatus(true));
-        localStorage.setItem("user", token);
+
+        localStorage.setItem("user", JSON.stringify(tokenData));
+
         toggleLoginModal();
       })
       .catch((err) => {
-        console.error("Error:", err.response);
-
+        console.error("Error during Google login:", err.response);
         notification.error({
-          message: "Login failed!",
+          message: "Google login failed!",
+          description:
+            "An error occurred during Google login. Please try again.",
         });
       });
   };

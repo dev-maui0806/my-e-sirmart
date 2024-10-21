@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Space, notification, Popconfirm } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { getOrders } from "../../services/api/order";
 import axios from "axios";
 import { BASE_URL } from "../../services/url";
@@ -28,20 +28,20 @@ interface Order {
 }
 
 interface OrderType {
-  orderId: string,
-  shopName: string,
-  products: ProductItem[],
-  price: number,
-  status: string,
-  createdAt: string
+  orderId: string;
+  shopName: string;
+  products: ProductItem[];
+  price: number;
+  status: string;
+  createdAt: string;
 }
-
-
 
 const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
   const [orderData, setOrderData] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const CustomButton = ({ label, onClick, color, loading, disabled }: any) => {
     return (
@@ -49,7 +49,9 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
         onClick={onClick}
         disabled={loading || disabled}
         className={`py-1 w-[90px] rounded-[5px] flex justify-center items-center cursor-pointer 
-          ${color} ${loading || disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          ${color} ${
+          loading || disabled ? "opacity-50 cursor-not-allowed" : ""
+        }`}
       >
         {loading ? (
           <svg
@@ -113,7 +115,7 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
       dataIndex: "status",
       key: "status",
       align: "center",
-      render: (status) => status === "Shipped" ? "Out for delivery" : status
+      render: (status) => (status === "Shipped" ? "Out for delivery" : status),
     },
     {
       title: "Created At",
@@ -140,14 +142,14 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
 
           {record.status === "Delivered" && (
             <CustomButton
-            label="Complete"
-            onClick={() => handleCompleteOrder(record.orderId)}
-            color="bg-green-500 hover:bg-green-600 text-white"
-            loading={loadingStates[record.orderId] || false}
-            disabled={loadingStates[record.orderId] || false}
-          />
+              label="Complete"
+              onClick={() => handleCompleteOrder(record.orderId)}
+              color="bg-green-500 hover:bg-green-600 text-white"
+              loading={loadingStates[record.orderId] || false}
+              disabled={loadingStates[record.orderId] || false}
+            />
           )}
-      
+
           {record.status === "Delivered" && (
             <CustomButton
               label="Refund"
@@ -157,7 +159,7 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
               disabled={loadingStates[record.orderId] || false}
             />
           )}
-      
+
           {record.status === "Cancelled" || record.status === "Delivered" ? (
             <CustomButton
               label="Delete"
@@ -167,7 +169,7 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
               disabled={loadingStates[record.orderId] || false}
             />
           ) : null}
-      
+
           {record.status === "Refund Approved" && (
             <CustomButton
               label="Delete"
@@ -178,7 +180,7 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
             />
           )}
         </div>
-      )
+      ),
     },
   ];
 
@@ -203,8 +205,8 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
           data,
           {
             headers: {
-              'Content-Type': 'application/json',
-              'authorization': `Bearer ${token}`,
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
             },
           }
         );
@@ -225,33 +227,33 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
       }
     }
   };
-  
+
   const handleRefundRequestOrder = async (orderId: string) => {
     setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
-  
+
     const userData = localStorage.getItem("user");
-  
+
     if (userData) {
       const token = JSON.parse(userData).access_token;
       const data = JSON.stringify({
         orderId,
       });
-  
+
       try {
         const response = await axios.put(
-          `${BASE_URL}/orders/refundRequestOrder`,  // Example API endpoint for refund
+          `${BASE_URL}/orders/refundRequestOrder`, // Example API endpoint for refund
           data,
           {
             headers: {
-              'Content-Type': 'application/json',
-              'authorization': `Bearer ${token}`,
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
             },
           }
         );
-  
+
         if (response.data.success) {
-          await fetchOrders();  // Refetch orders after successful refund
-          
+          await fetchOrders(); // Refetch orders after successful refund
+
           notification.success({
             message: response.data.message,
           });
@@ -265,33 +267,33 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
       }
     }
   };
-  
+
   const handleCompleteOrder = async (orderId: string) => {
     setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
-  
+
     const userData = localStorage.getItem("user");
-  
+
     if (userData) {
       const token = JSON.parse(userData).access_token;
       const data = JSON.stringify({
         orderId,
       });
-  
+
       try {
         const response = await axios.put(
-          `${BASE_URL}/orders/completeOrder`,  // Example API endpoint for marking the order as complete
+          `${BASE_URL}/orders/completeOrder`, // Example API endpoint for marking the order as complete
           data,
           {
             headers: {
-              'Content-Type': 'application/json',
-              'authorization': `Bearer ${token}`,
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
             },
           }
         );
-  
+
         if (response.data.success) {
-          await fetchOrders();  // Refetch orders after successful completion
-          
+          await fetchOrders(); // Refetch orders after successful completion
+
           notification.success({
             message: response.data.message,
           });
@@ -305,29 +307,29 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
       }
     }
   };
-  
+
   const handleDeleteOrder = async (orderId: string) => {
     setLoadingStates((prevState) => ({ ...prevState, [orderId]: true }));
-  
+
     const userData = localStorage.getItem("user");
-  
+
     if (userData) {
       const token = JSON.parse(userData).access_token;
-  
+
       try {
         const response = await axios.delete(
-          `${BASE_URL}/orders/deleteOrder/${orderId}`,  // Example API endpoint for deleting an order
+          `${BASE_URL}/orders/deleteOrder/${orderId}`, // Example API endpoint for deleting an order
           {
             headers: {
-              'Content-Type': 'application/json',
-              'authorization': `Bearer ${token}`,
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
             },
           }
         );
-  
+
         if (response.data.success) {
-          await fetchOrders();  // Refetch orders after successful deletion
-          
+          await fetchOrders(); // Refetch orders after successful deletion
+
           notification.success({
             message: response.data.message,
           });
@@ -345,16 +347,15 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
   const fetchOrders = async () => {
     try {
       const data = await getOrders();
-
-      const ordersData: any[] = data.map((item:any) => {
+      const ordersData: any[] = data.map((item: any) => {
         const products = item.items.map((product: any) => {
           return {
             productId: product.productId._id,
             productName: product.productId.name,
             price: product.price,
-            quantity: product.quantity
-          }
-        })
+            quantity: product.quantity,
+          };
+        });
 
         return {
           orderId: item.razorpay_order_id,
@@ -362,8 +363,8 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
           products,
           price: item.totalPrice,
           status: item.status,
-          createdAt: item.created_at.toLocaleString()
-        }
+          createdAt: item.created_at.toLocaleString(),
+        };
       });
       setLoading(false);
       setOrderData(ordersData);
@@ -373,10 +374,10 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
 
       if (errorStatus === 401) {
         notification.error({
-          message: "Get Orders Failed!"
+          message: "Get Orders Failed!",
         });
         notification.error({
-          message: "Please login again!"
+          message: "Please login again!",
         });
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -384,7 +385,7 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
         window.location.reload();
         return;
       }
-      
+
       console.error("Error fetching orders:", error);
     }
   };
@@ -392,23 +393,27 @@ const Order: React.FC<OrderProps> = ({ toggleOrderModal, onOrderSuccess }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content-Order">
-        <button className="modal-close" onClick={toggleOrderModal} style={{color: "#70b55d"}}>
+        <button
+          className="modal-close"
+          onClick={toggleOrderModal}
+          style={{ color: "#70b55d" }}
+        >
           ×
         </button>
         <div className="modal-header">
-          <h2 style={{color: "#70b55d"}}>My Orders</h2>
+          <h2 style={{ color: "#70b55d" }}>My Orders</h2>
         </div>
 
         <div className="order-form">
-        <Table
-          columns={columns}
-          dataSource={orderData}
-          rowKey="orderId"
-          pagination={false}
-          bordered
-          size="middle"
-          loading={loading}
-        />
+          <Table
+            columns={columns}
+            dataSource={orderData}
+            rowKey="orderId"
+            pagination={false}
+            bordered
+            size="middle"
+            loading={loading}
+          />
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ export const orderCreate = async (orders: any, addressData: any) => {
   if (userData) {
     const accessToken: any = JSON.parse(userData);
     console.log(orders, addressData);
-    try{
+    try {
       const response = await axios.post(
         ORDERCREATEURL,
         {
@@ -41,7 +41,7 @@ export const orderCreate = async (orders: any, addressData: any) => {
       );
       console.log(response.data);
       return response;
-    } catch(error: any) {
+    } catch (error: any) {
       return error.response;
     }
   } else {
@@ -61,7 +61,7 @@ export const verifyPaymentOnBackend = async (paymentDetails: PaymentDetails): Pr
     try {
       const response = await axios.post(
         VERIFYPAYMENT,
-        JSON.stringify({paymentDetails: paymentDetails, cartItems: cartItems}),
+        JSON.stringify({ paymentDetails: paymentDetails, cartItems: cartItems }),
         {
           headers: {
             "Content-Type": "application/json",
@@ -82,6 +82,7 @@ export const verifyPaymentOnBackend = async (paymentDetails: PaymentDetails): Pr
 
 export const getOrders = async (): Promise<any> => {
   const userData = localStorage.getItem("user");
+  console.log(userData);
 
   if (userData) {
     const accessToken: any = JSON.parse(userData);
