@@ -7,9 +7,16 @@ import { LOGINDATA, userLogin } from "../../services/api/auth";
 import { notification, Spin } from "antd"; // Import Spin component from antd
 import { LoadingOutlined } from "@ant-design/icons";
 import { setLoginStatus } from "../../store/status";
-import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { GoogleLoginClientID } from "../../services/url";
-import { handleGoogleLoginSuccess, handleGoogleLoginError } from "../../services/globalfunctions";
+import {
+  // handleGoogleLoginSuccess,
+  handleGoogleLoginError,
+} from "../../services/api/auth";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { BASE_URL } from "../../services/url";
+
 import {
   GoogleLogin,
   googleLogout,
@@ -20,6 +27,13 @@ interface LoginProps {
   switchToSignupModal: () => void;
   toggleLoginModal: () => void;
   switchToForgotPassModal: () => void;
+}
+
+interface DecodedToken {
+  email: string;
+  name: string;
+  given_name: string;
+  family_name: string;
 }
 
 const Login: React.FC<LoginProps> = ({
@@ -49,6 +63,7 @@ const Login: React.FC<LoginProps> = ({
 
     try {
       const response = await userLogin(loginData);
+      console.log(response);
 
       notification.success({
         message: "Login successfully",
@@ -62,6 +77,40 @@ const Login: React.FC<LoginProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLoginSuccess = (response: any) => {
+    if (response.error) {
+      console.log(`Error: ${response.error}`);
+      return false;
+    }
+
+    const decodedToken = jwtDecode<DecodedToken>(response.credential);
+
+    const data = {
+      email: decodedToken.email,
+      first_name: decodedToken.given_name,
+      last_name: decodedToken.family_name,
+    };
+
+    axios
+      .post(`${BASE_URL}/auth/loginWithGoogle`, data)
+      .then((response) => {
+        const token = response.data.token; // Assuming token is in `response.data.token`
+        notification.success({
+          message: "Logged in successfully with Google!",
+        });
+        dispatch(setLoginStatus(true));
+        localStorage.setItem("user", token);
+        toggleLoginModal();
+      })
+      .catch((err) => {
+        console.error("Error:", err.response);
+
+        notification.error({
+          message: "Login failed!",
+        });
+      });
   };
 
   useEffect(() => {
@@ -192,19 +241,19 @@ const Login: React.FC<LoginProps> = ({
                   forgot password?
                 </a>
               </div>
-            <div
-              onClick={handleLogin}
-              className="w-full cursor-pointer hidden mt-4 py-4 lg:flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
-            >
-              {loading ? (
-                <Spin
-                  indicator={<LoadingOutlined spin />}
-                  style={{ marginRight: "15px", color: "#fff" }}
-                />
-              ) : (
-                "SIGN IN"
-              )}
-            </div>
+              <div
+                onClick={handleLogin}
+                className="w-full cursor-pointer hidden mt-4 py-4 lg:flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
+              >
+                {loading ? (
+                  <Spin
+                    indicator={<LoadingOutlined spin />}
+                    style={{ marginRight: "15px", color: "#fff" }}
+                  />
+                ) : (
+                  "SIGN IN"
+                )}
+              </div>
               {isMobileView && (
                 <div className="flex flex-row justify-between items-center">
                   <div

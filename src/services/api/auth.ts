@@ -2,7 +2,8 @@
 
 import { notification } from "antd";
 import axios from "axios";
-import { FORGOTPASSWORD, LOGIN, REGISTER } from "../url.js";
+import { FORGOTPASSWORD, LOGIN, REGISTER, BASE_URL } from "../url.js";
+import { jwtDecode } from "jwt-decode";
 
 export interface LOGINDATA {
   email: string;
@@ -18,6 +19,13 @@ export interface REGISTERDATA {
   password: string;
 }
 
+export interface DecodedToken {
+  email: string;
+  name: string;
+  given_name: string;
+  family_name: string;
+}
+
 
 export const userLogin = async (payload: LOGINDATA) => {
   try {
@@ -27,6 +35,9 @@ export const userLogin = async (payload: LOGINDATA) => {
       },
     };
 
+    console.log(loginData);
+
+
     // Ensure the payload is properly formatted
     const response = await axios.post(LOGIN, loginData, {
       headers: {
@@ -34,6 +45,7 @@ export const userLogin = async (payload: LOGINDATA) => {
       },
     });
 
+    console.log(response, response.data);
     return response.data;
 
   } catch (error: any) {
@@ -96,4 +108,47 @@ export const resetPassword = async (email: string) => {
   });
 
   return response;
+};
+
+
+// export const handleGoogleLoginSuccess = (response: any) => {
+
+//   if (response.error) {
+//     console.log(`Error: ${response.error}`);
+//     return false;
+//   }
+
+//   const decodedToken = jwtDecode<DecodedToken>(response.credential);
+
+//   const data = {
+//     email: decodedToken.email,
+//     first_name: decodedToken.given_name,
+//     last_name: decodedToken.family_name,
+//   };
+
+//   axios
+//     .post(`${BASE_URL}/auth/loginWithGoogle`, data)
+//     .then((response) => {
+//       const token = response.data.token; // Assuming token is in `response.data.token`
+
+//       localStorage.setItem("user", token);
+//       notification.success({
+//         message: "Logged in successfully with Google!",
+//       });
+//     })
+//     .catch((err) => {
+//       console.error("Error:", err.response);
+
+//       // Show error notification
+//       notification.error({
+//         message: "Login failed!",
+//       });
+//     });
+// };
+
+export const handleGoogleLoginError = () => {
+  console.log("error");
+  notification.error({
+    message: "Google Login Failed",
+  });
 };

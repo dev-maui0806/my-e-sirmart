@@ -23,13 +23,13 @@ import { setLoginStatus } from "../../store/status";
 
 const Header = ({ onSearch }: any) => {
   const dispatch = useAppDispatch();
-  const { isLogin } =
-    useAppSelector((state) => state.status);
+  const isLogin = useAppSelector((state) => state.status.isLogin);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const [isForgotPasswordModalOpen, setISForgotPasswordModalOpen] = useState(false);
-  const [searchText, setSearchText] = useState<string>('');
+  const [isForgotPasswordModalOpen, setISForgotPasswordModalOpen] =
+    useState(false);
+  const [searchText, setSearchText] = useState<string>("");
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -92,7 +92,7 @@ const Header = ({ onSearch }: any) => {
             <LocationPicker />
           </div>
           <div className="flex-1 relative _header_search">
-            <SearchBox onSearch={onSearch}/>
+            <SearchBox onSearch={onSearch} />
           </div>
           <div className="flex items-center _header_login justify-center cursor-pointer sm:hover:bg-gray-50 max-w-[80px] w-full group">
             <span className="font-medium _text-default block">

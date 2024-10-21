@@ -1,18 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type InitialState = {
   isLogin: boolean
 };
 
 const initialState: InitialState = {
-    isLogin: false
+  isLogin: false
 };
 
 const status = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    setLoginStatus: (state, action) => {
+    setLoginStatus: (state, action: PayloadAction<boolean>) => {
       state.isLogin = action.payload;
     }
   },

@@ -11,9 +11,12 @@ import {
   googleLogout,
   GoogleOAuthProvider,
 } from "@react-oauth/google"; // Import Google login and logout
- // Import jwt-decode library.
+// Import jwt-decode library.
 import { GoogleLoginClientID } from "../../services/url";
-import { handleGoogleLoginSuccess, handleGoogleLoginError } from "../../services/globalfunctions";
+import {
+  handleGoogleLoginSuccess,
+  handleGoogleLoginError,
+} from "../../services/api/auth";
 
 interface SignupProps {
   switchToLoginModal: () => void;
@@ -239,19 +242,19 @@ const Signup: React.FC<SignupProps> = ({
                 </div>
               </div>
 
-                <div
-                  onClick={handleRegister}
-                  className="w-full cursor-pointer mt-7 py-4 hidden lg:flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
-                >
-                  {loading ? (
-                    <Spin
-                      indicator={<LoadingOutlined spin />}
-                      style={{ marginRight: "15px", color: "#fff" }}
-                    />
-                  ) : (
-                    "SIGN UP"
-                  )}
-                </div>
+              <div
+                onClick={handleRegister}
+                className="w-full cursor-pointer mt-7 py-4 hidden lg:flex justify-center items-center bg-[#06A67E] text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 ease-in-out"
+              >
+                {loading ? (
+                  <Spin
+                    indicator={<LoadingOutlined spin />}
+                    style={{ marginRight: "15px", color: "#fff" }}
+                  />
+                ) : (
+                  "SIGN UP"
+                )}
+              </div>
 
               {isMobileView && (
                 <div className="flex flex-row justify-between items-center">
