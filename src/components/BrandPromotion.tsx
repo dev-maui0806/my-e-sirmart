@@ -1,10 +1,10 @@
-import { IoCheckmarkCircle } from 'react-icons/io5';
-import AppStoreLogo from '../assets/images/app-store.webp';
-import PlayStoreLogo from '../assets/images/play-store.webp';
-import Feat1 from '../assets/images/promo-feat-1.webp';
-import Feat2 from '../assets/images/promo-feat-2.avif';
-import Feat3 from '../assets/images/promo-feat-3.png';
-import Feat4 from '../assets/images/promo-feat-4.png';
+import { IoCheckmarkCircle } from "react-icons/io5";
+import AppStoreLogo from "../assets/images/app-store.webp";
+import PlayStoreLogo from "../assets/images/play-store.webp";
+import Feat1 from "../assets/images/promo-feat-1.webp";
+import Feat2 from "../assets/images/promo-feat-2.avif";
+import Feat3 from "../assets/images/promo-feat-3.png";
+import Feat4 from "../assets/images/promo-feat-4.png";
 
 type Feature = {
   imgSrc: string;
@@ -15,27 +15,27 @@ type Feature = {
 export const allFeatures: Feature[] = [
   {
     imgSrc: Feat1,
-    text: 'Superfast/Quick Delivery',
+    text: "Superfast/Quick Delivery",
     description:
-      'Get your order delivered to your doorstep at the earliest from stores near you.',
+      "Get your order delivered to your doorstep at the earliest from stores near you.",
   },
   {
     imgSrc: Feat2,
-    text: 'Best Deals & Offers',
+    text: "Best Deals & Offers",
     description:
-      ' Same products in cheaper rates by availing great cashback offers',
+      " Same products in cheaper rates by availing great cashback offers",
   },
   {
     imgSrc: Feat3,
-    text: 'Broad Assortment',
+    text: "Broad Assortment",
     description:
-      'Choose from 100+ products across food, personal care, household & other categories',
+      "Choose from 100+ products across food, personal care, household & other categories",
   },
   {
     imgSrc: Feat4,
-    text: 'Smooth Return & Refund Policy',
+    text: "Smooth Return & Refund Policy",
     description:
-      'Didn’t like the product? Return it at the doorstep & get refunded within same day',
+      "Didn’t like the product? Return it at the doorstep & get refunded within same day",
   },
 ];
 
@@ -79,14 +79,14 @@ const BrandPromotion = () => {
                     <IoCheckmarkCircle
                       size={24}
                       className="text-green-600 mr-3"
-                    />{' '}
+                    />{" "}
                     <span>Miss live order tracking</span>
                   </div>
                   <div className="flex items-center">
                     <IoCheckmarkCircle
                       size={24}
                       className="text-green-600 mr-3"
-                    />{' '}
+                    />{" "}
                     <span>Miss latest feature updates</span>
                   </div>
                 </div>
@@ -116,11 +116,16 @@ const BrandPromotion = () => {
                       />
                     </div>
                     <div className="xs:flex-1 h-12 rounded cursor-pointer overflow-hidden bg-[#213b50]">
-                      <img
-                        src={PlayStoreLogo}
-                        alt="Play store"
-                        className="h-full w-full object-contain"
-                      />
+                      <a
+                        href="https://play.google.com/apps/testing/com.Bellybasket.customer"
+                        target="_blank"
+                      >
+                        <img
+                          src={PlayStoreLogo}
+                          alt="Play store"
+                          className="h-full w-full object-contain"
+                        />
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -134,8 +139,9 @@ const BrandPromotion = () => {
           </div>
           <div className="border-b _border-light pt-2 pb-10">
             <p className="text-sm _text-default">
-              "“BellyBasket”" is owned & managed by "“BellyBasket eCommerce Private Limited" and is not related,
-              linked or interconnected with any other business service.
+              "“BellyBasket”" is owned & managed by "“BellyBasket eCommerce
+              Private Limited" and is not related, linked or interconnected with
+              any other business service.
             </p>
           </div>
         </div>

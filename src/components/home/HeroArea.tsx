@@ -9,9 +9,7 @@ const HeroArea: React.FC = () => {
   const [isMobileView, setIsMobileView] = useState<boolean>(
     window.innerWidth <= 639
   );
-  const [isExactWidth639, setIsExactWidth639] = useState<boolean>(
-    window.innerWidth === 639
-  );
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,42 +20,38 @@ const HeroArea: React.FC = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsExactWidth639(window.innerWidth <= 639); // Update state when width is exactly 639px
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
   return (
     <div className="w-full space-y-4 mt-3 px-4">
-      {!isExactWidth639 && (
-        <div>
-          <img src={firstHeder} />
-        </div>
-      )}
-
       {isMobileView && (
-        <div>
-          <img src={secondHeder} />
-        </div>
+        <>
+          <div>
+            <img src={secondHeder} />
+          </div>
+          <div>
+            <a
+              href="https://play.google.com/apps/testing/com.Bellybasket.customer"
+              target="_blank"
+            >
+              <img src={icon} alt="Clickable Image" />
+            </a>
+          </div>
+        </>
       )}
 
-      {!isExactWidth639 && (
-        <div>
-          <img src={image} />
-        </div>
-      )}
-
-      {isMobileView && (
-        <div>
-          <img src={icon} />
-        </div>
+      {!isMobileView && (
+        <>
+          <div>
+            <img src={firstHeder} />
+          </div>
+          <div>
+            <a
+              href="https://play.google.com/apps/testing/com.Bellybasket.customer"
+              target="_blank"
+            >
+              <img src={image} alt="Clickable Image" />
+            </a>
+          </div>
+        </>
       )}
     </div>
   );

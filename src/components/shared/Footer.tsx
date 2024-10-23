@@ -31,7 +31,10 @@ const faqs = [
     answers: [
       "At bellybasket, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you interact with our website or mobile application.",
       <ul className="list-style">
-        <li>Personal information such as name, email, contact number, and address when you register or place an order.</li>
+        <li>
+          Personal information such as name, email, contact number, and address
+          when you register or place an order.
+        </li>
         <li>Payment details through secure, encrypted channels.</li>
         <li>Browsing data to improve your experience on our platform.</li>
       </ul>,
@@ -58,9 +61,17 @@ const faqs = [
     answers: [
       "We want you to be completely satisfied with your purchase at bellybasket. If you’re not happy with a product, here’s how we handle refunds and returns:",
       <ul className="list-style">
-        <li>Products must be returned within 7 days from the date of purchase.</li>
-        <li>Items must be unused, in original packaging, and with proof of purchase.</li>
-        <li>Perishable goods (e.g., fresh produce, dairy, etc.) unless they are damaged or expired upon delivery.</li>
+        <li>
+          Products must be returned within 7 days from the date of purchase.
+        </li>
+        <li>
+          Items must be unused, in original packaging, and with proof of
+          purchase.
+        </li>
+        <li>
+          Perishable goods (e.g., fresh produce, dairy, etc.) unless they are
+          damaged or expired upon delivery.
+        </li>
         <li>Gift cards and other promotional items.</li>
       </ul>,
       "Once your return is received and inspected, we will notify you of the approval or rejection of your refund. If approved, the refund will be processed within 7 days to your original payment method.",
@@ -73,9 +84,19 @@ const faqs = [
       "Welcome to bellybasket. By accessing our website or mobile application, you agree to the following terms and conditions:",
       <ul className="list-style">
         <li>You must be at least 18 years old to use our services.</li>
-        <li>You agree to provide accurate, up-to-date information when creating an account or placing an order.</li>
-        <li>Unauthorized use of our platform, including hacking or data theft, is strictly prohibited.</li>
-        <li>All orders are subject to availability. We reserve the right to cancel or modify an order if an item is out of stock or if there are other unforeseen issues.</li>
+        <li>
+          You agree to provide accurate, up-to-date information when creating an
+          account or placing an order.
+        </li>
+        <li>
+          Unauthorized use of our platform, including hacking or data theft, is
+          strictly prohibited.
+        </li>
+        <li>
+          All orders are subject to availability. We reserve the right to cancel
+          or modify an order if an item is out of stock or if there are other
+          unforeseen issues.
+        </li>
         <li>Prices may vary and are subject to change without prior notice.</li>
       </ul>,
       "Bellybasket is not liable for any indirect, incidental, or consequential damages arising from the use of our service. While we strive for accuracy, we cannot guarantee that all product descriptions, pricing, and availability will be error-free.",
@@ -121,7 +142,10 @@ const Footer = () => {
             {openIndex === index && (
               <div>
                 {faq.answers.map((answer, idx) => (
-                  <div key={idx} className="faq-answer px-4 py-2 text-gray-600 text-sm">
+                  <div
+                    key={idx}
+                    className="faq-answer px-4 py-2 text-gray-600 text-sm"
+                  >
                     {answer}
                   </div>
                 ))}
@@ -156,7 +180,9 @@ const Footer = () => {
               <div className="text-[15px] _text-default w-[100%]">
                 <div className="flex flex-row py-1 items-center">
                   <FaMapMarkerAlt />
-                  <p className="w-full ml-1">Address :  Belandur, Bengaluru – 560035</p>
+                  <p className="w-full ml-1">
+                    Address : Belandur, Bengaluru – 560035
+                  </p>
                 </div>
                 <div className="flex flex-row py-1 items-center">
                   <FaPhone />
@@ -164,7 +190,9 @@ const Footer = () => {
                 </div>
                 <div className="flex flex-row py-1 items-center">
                   <FaEnvelope />
-                  <p className="w-full ml-1">Email : customersupport@bellybasketstore.com</p>
+                  <p className="w-full ml-1">
+                    Email : customersupport@bellybasketstore.com
+                  </p>
                 </div>
               </div>
             </div>
@@ -189,11 +217,16 @@ const Footer = () => {
                 />
               </div>
               <div className="h-8 w-24 rounded-[3px] cursor-pointer overflow-hidden">
-                <img
-                  src={PlayStoreLogo}
-                  alt="Play store"
-                  className="h-full w-full object-cover"
-                />
+                <a
+                  href="https://play.google.com/apps/testing/com.Bellybasket.customer"
+                  target="_blank"
+                >
+                  <img
+                    src={PlayStoreLogo}
+                    alt="Play store"
+                    className="h-full w-full object-cover"
+                  />
+                </a>
               </div>
             </div>
             <div className="flex-1 flex items-center md:justify-end gap-4 lg:gap-6">
