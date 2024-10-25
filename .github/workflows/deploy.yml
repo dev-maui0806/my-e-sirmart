@@ -1,0 +1,36 @@
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SERVER_URL : ${{secrets.VITE_SERVER_URL}}
+      VITE_razorpayKeyId : ${{secrets.VITE_razorpayKeyId}}
+      VITE_GOOGLE_MAP_API_KEY : ${{secrets.VITE_GOOGLE_MAP_API_KEY}}
+      VITE_CompanyName : ${{secrets.VITE_CompanyName}}
+      VITE_omapnyDescription : ${{secrets.VITE_omapnyDescription}}
+      VITE_PUBLIC_GOOGLE_CLIENT_ID : ${{secrets.VITE_PUBLIC_GOOGLE_CLIENT_ID}}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build the app
+      run: npm run build
+
+    - name: Deploy to server
+      run: |
+        scp -r ./dist/* root@91.108.110.252:/var/www/customer.bellybasketsotre.com/dist
+        ssh root@91.108.110.252 'pm2 restart bellybasket-app'
