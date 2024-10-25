@@ -40,5 +40,5 @@ jobs:
 
     - name: Deploy to server
       run: |
-        scp -o StrictHostKeyChecking=no -r ./build/* root@91.108.110.252:/var/www/customer.bellybasketsotre.com/dist
+        scp -o StrictHostKeyChecking=no -r ./dist/* root@91.108.110.252:/var/www/customer.bellybasketsotre.com/dist
         ssh -o StrictHostKeyChecking=no root@91.108.110.252 'pm2 restart bellybasket-app'
