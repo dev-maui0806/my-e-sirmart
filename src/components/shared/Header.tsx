@@ -130,7 +130,7 @@ const Header = ({ onSearch }: any) => {
               ) : (
                 <div className="flex items-center" onClick={toggleLoginModal}>
                   <LoginOutlined className="mr-1 text-[20px]" />
-                  Login
+                  Loginddddd
                 </div>
               )}
             </span>
