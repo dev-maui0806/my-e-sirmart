@@ -34,11 +34,11 @@ jobs:
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
-        printf "%s" "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
+        echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 91.108.110.252 >> ~/.ssh/known_hosts
 
     - name: Deploy to server
       run: |
-        scp -r ./build/* root@91.108.110.252:/var/www/customer.bellybasketsotre.com/dist
-        ssh root@91.108.110.252 'pm2 restart bellybasket-app'
+        scp -o StrictHostKeyChecking=no -r ./build/* root@91.108.110.252:/var/www/customer.bellybasketsotre.com/dist
+        ssh -o StrictHostKeyChecking=no root@91.108.110.252 'pm2 restart bellybasket-app'
