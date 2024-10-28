@@ -79,7 +79,7 @@ const Header = ({ onSearch }: any) => {
 
   return (
     <>
-      <header className="_nav px-2 sm:px-0">
+      <header className="_nav px-2 sm:px-0 z-30">
         <div className="_header sm:flex h-full">
           <div className="hidden sm:flex max-w-[150px] md:max-w-[178px] w-full cursor-pointer sm:hover:bg-gray-50 items-center justify-center border-r _border-light">
             <Link to={"/"}>
