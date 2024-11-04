@@ -10,7 +10,6 @@ const HeroArea: React.FC = () => {
     window.innerWidth <= 639
   );
 
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobileView(window.innerWidth <= 639);
@@ -20,6 +19,7 @@ const HeroArea: React.FC = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  
   return (
     <div className="w-full space-y-4 mt-3 px-4">
       {isMobileView && (
