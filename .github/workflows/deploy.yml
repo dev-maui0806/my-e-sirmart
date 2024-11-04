@@ -9,14 +9,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      VITE_SERVER_URL: ${{secrets.VITE_SERVER_URL}}
-      VITE_razorpayKeyId: ${{secrets.VITE_razorpayKeyId}}
-      VITE_GOOGLE_MAP_API_KEY: ${{secrets.VITE_GOOGLE_MAP_API_KEY}}
-      VITE_CompanyName: ${{secrets.VITE_CompanyName}}
-      VITE_omapnyDescription: ${{secrets.VITE_omapnyDescription}}
-      VITE_PUBLIC_GOOGLE_CLIENT_ID: ${{secrets.VITE_PUBLIC_GOOGLE_CLIENT_ID}}
+      VITE_SERVER_URL: ${{vars.VITE_SERVER_URL}}
+      VITE_razorpayKeyId: ${{vars.VITE_razorpayKeyId}}
+      VITE_GOOGLE_MAP_API_KEY: ${{vars.VITE_GOOGLE_MAP_API_KEY}}
+      VITE_CompanyName: ${{vars.VITE_CompanyName}}
+      VITE_omapnyDescription: ${{vars.VITE_omapnyDescription}}
+      VITE_PUBLIC_GOOGLE_CLIENT_ID: ${{vars.VITE_PUBLIC_GOOGLE_CLIENT_ID}}
 
     steps:
+    - name: Read a variable
+      run: echo "My VITE_SERVER_URL value is ${{ vars.VITE_SERVER_URL }}"
     - name: Checkout code
       uses: actions/checkout@v2
 
