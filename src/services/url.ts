@@ -4,6 +4,9 @@
 // export const CompanyName = "Your Company";
 // export const ComapnyDescription = "Test transaction";
 export const SERVER_URL = import.meta.env.VITE_SERVER_URL; // Update your server url
+const env = import.meta.env;
+console.log(env)
+
 export const razorpayKeyId = import.meta.env.VITE_razorpayKeyId;
 export const GOOGLE_MAP_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 export const CompanyName = import.meta.env.VITE_CompanyName;
