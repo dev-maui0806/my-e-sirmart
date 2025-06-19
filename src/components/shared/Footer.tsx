@@ -181,17 +181,17 @@ const Footer = () => {
                 <div className="flex flex-row py-1 items-center">
                   <FaMapMarkerAlt />
                   <p className="w-full ml-1">
-                    Address : Belandur, Bengaluru – 560035
+                    Address :King of - Al Quoz Al - Al Quoz Industrial Area 4 - Dubai - United Arab Emirates
                   </p>
                 </div>
                 <div className="flex flex-row py-1 items-center">
                   <FaPhone />
-                  <p className="w-full ml-1">Call : +91-8625879347</p>
+                  <p className="w-full ml-1">Call : +(91)-704-295-9398</p>
                 </div>
                 <div className="flex flex-row py-1 items-center">
                   <FaEnvelope />
                   <p className="w-full ml-1">
-                    Email : customersupport@bellybasketstore.com
+                    Email : mycolan@e-siremart.com"
                   </p>
                 </div>
               </div>
